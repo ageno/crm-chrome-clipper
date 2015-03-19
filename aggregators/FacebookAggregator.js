@@ -24,12 +24,12 @@ var FacebookAggregator = function() {
     this.elements = [
       {
         name: 'first_name',
-        selector: '._58gi',
+        selector: '#fb-timeline-cover-name',
         modifier: this.parseFirstname
       },
       {
         name: 'name',
-        selector: '._58gi',
+        selector: '#fb-timeline-cover-name',
         modifier: this.parseLastname
       },
       {
