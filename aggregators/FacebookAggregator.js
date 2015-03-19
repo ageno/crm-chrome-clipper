@@ -40,7 +40,7 @@ var FacebookAggregator = function() {
         name: 'avatar',
         selector: '.profilePic.img',
         attribute: 'src',
-        modifier: this.parseProtocol
+        modifier: this.getAvatar
       },
       {
         name: 'websites',
@@ -64,4 +64,13 @@ FacebookAggregator.prototype.getType = function() {
   } else {
     return false
   }
+}
+
+FacebookAggregator.prototype.getAvatar = function() {
+    // TODO: Only in profile page, get ID parameter from url when exist
+    var path = window.location.pathname
+    if (path.length) {
+        path = 'https://graph.facebook.com/' + path + '/picture?type=large'
+    }
+    return path;
 }
