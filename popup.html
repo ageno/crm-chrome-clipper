@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container container--loading" id="container">
+  </div>
+
+  <script id="vcard-header" type="x-tmpl-mustache">
+    <div class="vcardheader">
+      <div class="vcardheader__avatar {{^data.avatar}}vcardheader__avatar--empty{{/data.avatar}}">
+        {{#data.avatar}}
+        <img src="{{data.avatar}}" data-avatar>
+        {{/data.avatar}}
+        <input type="hidden" value="{{data.avatar}}" name="avatar">
+      </div>
+      <div class="vcardheader__name">
+        <label>
+        {{^data.is_company}}Imię i nazwisko{{/data.is_company}}
+        {{#data.is_company}}Nazwa{{/data.is_company}}
+        </label>
+        <div class="vcardheader__inputs">
+          {{^data.is_company}}
+          <input type="text" value="{{data.first_name}}" name="first_name">
+          {{/data.is_company}}
+          <input type="text" value="{{data.name}}" name="name">
+        </div>
+        <input type="hidden" value="{{data.id}}" name="id">
+        <input type="hidden" value="{{#data.is_company}}1{{/data.is_company}}{{^data.is_company}}0{{/data.is_company}}" name="is_company">
+      </div>
+    </div>
+  </script>
+  <script id="vcard-form" type="x-tmpl-mustache">
+    <div class="vcardform">
+      <div class="vcardform__group {{^data.city}}hidden{{/data.city}}">
+        <label>Miasto</label>
+        <input type="text" value="{{data.city}}" name="city">
+      </div>
+      <div class="vcardform__group {{^data.websites}}hidden{{/data.websites}}">
+        <label>Strona</label>
+        {{^data.websites}}
+          <input type="url" name="websites[][url]">
+        {{/data.websites}}
+        {{#data.websites}}
+          <input type="url" name="websites[][url]" value="{{url}}">
+          <input type="hidden" name="websites[][id]" value="{{id}}">
+        {{/data.websites}}
+        <a data-addinput="websites[][url]">+ Dodaj stronę</a>
+      </div>
+      <div class="vcardform__group {{^data.phones}}hidden{{/data.phones}}">
+        <label>Telefon</label>
+        {{^data.phones}}
+          <input type="phone" name="phones[][number]">
+        {{/data.phones}}
+        {{#data.phones}}
+          <input type="phone" name="phones[][number]" value="{{number}}">
+          <input type="hidden" name="phones[][id]" value="{{id}}">
+        {{/data.phones}}
+        <a data-addinput="phones[][number]">+ Dodaj telefon</a>
+      </div>
+      <div class="vcardform__group {{^data.emails}}hidden{{/data.emails}}">
+        <label>E-mail</label>
+        {{^data.emails}}
+          <input type="email" name="emails[][address]">
+        {{/data.emails}}
+        {{#data.emails}}
+          <input type="email" name="emails[][address]" value="{{address}}">
+          <input type="hidden" name="emails[][id]" value="{{id}}">
+        {{/data.emails}}
+        <a data-addinput="emails[][address]">+ Dodaj e-mail</a>
+      </div>
+      <div class="vcardform__group {{^data.description}}hidden{{/data.description}}">
+        <label>Opis</label>
+        <textarea name="description"></textarea>
+      </div>
+      <div class="vcardform__group vcardform__group--showall">
+        <label><input type="checkbox" id="showallfields"> Pokaż wszystkie pola</label>
+      </div>
+    </div>
+  </script>
+  <script id="vcard" type="x-tmpl-mustache">
+    <form class="vcard" id="contactform" novalidate>
+      <div id="vcardheader"></div>
+      <div id="vcardsimilar"></div>
+      <div id="vcardform"></div>
+      <div class="vcardsave">
+        {{#user.hasMultipleAccounts}}
+          <div class="vcardsave__setaccount">
+            <label>Wybierz konto</label>
+            <select id="accountselect">
+            {{#user.accounts}}
+              <option value="{{url}}" {{#isDefault}}selected{{/isDefault}}>{{name}}</option>
+            {{/user.accounts}}
+            </select>
+          </div>
+        {{/user.hasMultipleAccounts}}
+        <div class="vcardsave__btnwrapper">
+          <button class="vcardsave__btn" type="submit">Dodaj kontakt</button>
+        </div>
+      </div>
+    </form>
+  </script>
+  <script id="vcard-saved" type="x-tmpl-mustache">
+    <div class="saved">
+      <div class="saved__inner">
+        <div class="saved__avatar {{^avatar}}saved__avatar--empty{{/avatar}}">
+          {{#avatar}}
+          <img src="{{avatar}}" alt="{{name}}">
+          {{/avatar}}
+        </div>
+        <div class="saved__name">{{first_name}} {{name}}</div>
+        <a class="saved__btn" href="{{url}}" target="_blank">Zobacz w miniCRM</a>
+      </div>
+    </div>
+  </script>
+  <script id="template-error" type="x-tmpl-mustache">
+    <div class="error">
+      <div class="error__inner">
+        <div class="error__clippy"></div>
+        <div class="error__message">
+          {{message}}
+          {{^message}}
+          Coś poszło nie tak :(
+          {{/message}}
+        </div>
+        <a class="error__btn" target="_blank" data-logout>Zaloguj się ponownie</a>
+        <div class="error__contactus">Jeżeli to nie pomogło - <a href="https://minicrm.pl/kontakt/" target="_blank">Napisz do nas</div>
+      </div>
+    </div>
+  </script>
+  <script id="vcard-similar" type="x-tmpl-mustache">
+    {{#hasContacts}}
+    <div class="similar">
+      <h4 class="similar__header">Podobne kontakty z MiniCRM.pl</h3>
+      <ul class="similar__list">
+        {{#contacts}}
+        <li class="similaritem" data-contact-id="{{id}}">
+          <span class="similaritem__avatar {{^avatar}}similaritem__avatar--empty{{/avatar}}">
+            {{#avatar}}
+            <img src="{{avatar}}" alt="{{name}}">
+            {{/avatar}}
+          </span>
+          <span class="similaritem__details">
+            {{first_name}} {{name}}
+            <button class="similaritem__btn similaritem__btn--merge" type="button">Połącz i edytuj</button>
+            <button class="similaritem__btn similaritem__btn--unmerge" type="button">Odłącz</button>
+          </span>
+        </li>
+        {{/contacts}}
+      </ul>
+    </div>
+    {{/hasContacts}}
+  </script>
+  <script id="template-login" type="x-tmpl-mustache">
+    <form class="login" novalidate>
+      {{#error}}
+      <div class="alert alert--error">
+        <div class="alert__inner">{{error}}</div>
+      </div>
+      {{/error}}
+      <div class="login__group">
+        <label for="input-email">E-mail</label>
+        <input type="email" name="email" id="input-email">
+      </div>
+      <div class="login__group">
+        <label for="input-password">Hasło</label>
+        <input type="password" name="password">
+      </div>
+      <button class="login__btn" type="submit">Zaloguj się</button>
+      <div class="login__footer">Nie masz konta? <a href="http://minicrm.pl" target="_blank">Zarejestruj się teraz!</a></div>
+    </form>
+  </script>
+
+  <script src="lib/jquery.min.js"></script>
+  <script src="lib/jquery.serializejson.min.js"></script>
+  <script src="lib/mustache.min.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

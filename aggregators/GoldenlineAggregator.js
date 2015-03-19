@@ -1,0 +1,62 @@
+var GoldenlineAggregator = function() {
+  if (this.isCompany()) {
+    this.elements = [
+      {
+        name: 'name',
+        selector: '[itemprop="name"]'
+      },
+      {
+        name: 'avatar',
+        selector: 'img[itemprop="logo"]',
+        attribute: 'src',
+        modifier: this.parseProtocol
+      },
+      {
+        name: 'websites',
+        selector: '.website a[itemprop="url"]',
+        multiple: true,
+        attribute: 'href',
+        modifier: this.parseProtocol
+      }
+    ]
+  } else {
+    this.elements = [
+      {
+        name: 'first_name',
+        selector: '[itemprop="name"]',
+        modifier: this.parseFirstname
+      },
+      {
+        name: 'name',
+        selector: '[itemprop="name"]',
+        modifier: this.parseLastname
+      },
+      {
+        name: 'city',
+        selector: '[itemprop="addressLocality"]'
+      },
+      {
+        name: 'avatar',
+        selector: 'meta[itemprop="image"]',
+        attribute: 'content',
+        modifier: this.parseProtocol
+      },
+      {
+        name: 'websites',
+        selector: '[itemprop="address"] .pages a',
+        multiple: true,
+        attribute: 'href',
+        modifier: this.parseProtocol
+      }
+    ]
+  }
+
+  BaseAggregator.apply(this, arguments)
+}
+
+GoldenlineAggregator.prototype = BaseAggregator.prototype
+GoldenlineAggregator.prototype.constructor = BaseAggregator
+
+GoldenlineAggregator.prototype.isCompany = function() {
+  return (document.querySelector('body').className.indexOf('employer') > -1) ? true : false
+}

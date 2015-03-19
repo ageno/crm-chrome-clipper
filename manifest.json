@@ -1,0 +1,32 @@
+{
+  "name": "miniCRM Concat Clipper",
+  "description": "",
+  "version": "2.0",
+  "permissions": [
+    "webNavigation",
+    "activeTab",
+    "storage",
+    "tabs"
+  ],
+  "browser_action": {
+    "default_icon": "images/icon.png",
+    "default_title": "Dodaj kontakt z miniCRM",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "scripts": [ "lib/jquery.min.js", "background.js" ]
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*"],
+      "js": [
+        "aggregators/BaseAggregator.js",
+        "aggregators/FacebookAggregator.js",
+        "aggregators/GoldenlineAggregator.js",
+        "content.js"
+      ]
+    }
+  ],
+  "options_page": "options.html",
+  "manifest_version": 2
+}

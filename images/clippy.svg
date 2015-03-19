@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="70px" height="120px" viewBox="0 0 70 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.0.4 (8054) - http://www.bohemiancoding.com/sketch -->
+    <title>original</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <radialGradient cx="-44.9318916%" cy="9.49421101%" fx="-44.9318916%" fy="9.49421101%" r="229.770538%" id="radialGradient-1">
+            <stop stop-color="#A9A9A9" offset="0%"></stop>
+            <stop stop-color="#565656" offset="100%"></stop>
+        </radialGradient>
+        <path id="path-2" d="M50.9999996,53.0000017 C50.9999996,53.0000017 46.9999982,63.9999993 47.9999996,77.9999993 C49.0000009,91.9999993 50.9999969,102.000002 43.9999996,107.000002 C37.0000022,112.000002 28.9999999,112.000002 22.9999992,106 C16.9999985,99.9999983 10,69 13.0000004,43 C14.2498932,32.1675978 15.380256,13.9957108 19.9999996,6.00000036 C24.6197433,-1.99571012 37.0000009,-3.00000001 42.999999,6.00000013 C48.9999971,15.0000003 39.0000003,37.9999946 39.0000009,49.9999981 C39.0000015,62.0000017 41.579194,77.0000037 39.0000009,83.0000017 C36.4208078,88.9999998 27.9999996,87.9999993 24.9999996,84.9999993 C21.9999996,81.9999993 18,69.9999993 18.9999996,58"></path>
+        <radialGradient cx="85.6896034%" cy="-78.7792969%" fx="85.6896034%" fy="-78.7792969%" r="176.524739%" id="radialGradient-3">
+            <stop stop-color="#FFFFFF" stop-opacity="0.5" offset="0%"></stop>
+            <stop stop-color="#000000" stop-opacity="0.5" offset="100%"></stop>
+        </radialGradient>
+        <path id="path-4" d="M11.5,14 C15.0898509,14 18,11.7614237 18,9 C18,6.23857625 15.0898509,4 11.5,4 C7.91014913,4 5,6.23857625 5,9 C5,11.7614237 7.91014913,14 11.5,14 Z"></path>
+        <radialGradient cx="100%" cy="-118.769531%" fx="100%" fy="-118.769531%" r="270.463769%" id="radialGradient-5">
+            <stop stop-color="#FFFFFF" stop-opacity="0.5" offset="0%"></stop>
+            <stop stop-color="#000000" stop-opacity="0.5" offset="100%"></stop>
+        </radialGradient>
+        <path id="path-6" d="M10.5,14 C14.0898509,14 17,11.7614237 17,9 C17,6.23857625 14.0898509,4 10.5,4 C6.91014913,4 4,6.23857625 4,9 C4,11.7614237 6.91014913,14 10.5,14 Z"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="original" sketch:type="MSArtboardGroup">
+            <g id="Group" sketch:type="MSLayerGroup" transform="translate(5.000000, 5.000000)">
+                <g id="Line">
+                    <use stroke="none" sketch:type="MSShapeGroup" xlink:href="#path-2"></use>
+                    <use stroke="url(#radialGradient-1)" stroke-width="4" stroke-linecap="square" xlink:href="#path-2"></use>
+                </g>
+                <g id="eye" transform="translate(2.000000, 20.000000)">
+                    <path d="M11,18 C17.0751322,18 22,13.9705627 22,9 C22,4.02943725 17.0751322,0 11,0 C4.92486775,0 0,4.02943725 0,9 C0,13.9705627 4.92486775,18 11,18 Z" id="Oval-1" stroke="#C3C3C3" fill="#FFFFFF" sketch:type="MSShapeGroup"></path>
+                    <g id="Oval-2">
+                        <use fill="#000000" sketch:type="MSShapeGroup" xlink:href="#path-4"></use>
+                        <use fill="url(#radialGradient-3)" xlink:href="#path-4"></use>
+                    </g>
+                </g>
+                <g id="eye-2" transform="translate(34.000000, 26.000000)">
+                    <path d="M11,18 C17.0751322,18 22,13.9705627 22,9 C22,4.02943725 17.0751322,0 11,0 C4.92486775,0 0,4.02943725 0,9 C0,13.9705627 4.92486775,18 11,18 Z" id="Oval-1" stroke="#C3C3C3" fill="#FFFFFF" sketch:type="MSShapeGroup"></path>
+                    <g id="Oval-2">
+                        <use fill="#000000" sketch:type="MSShapeGroup" xlink:href="#path-6"></use>
+                        <use fill="url(#radialGradient-5)" xlink:href="#path-6"></use>
+                    </g>
+                </g>
+                <path d="M61,20.9999998 C61,20.6543474 61,19 58,18 C55,17 50.1847698,17.2586504 46,19 C39.1625429,21.8451751 37.4593718,26.1252154 37.4593718,26.1252154 C37.2056677,26.6083454 37.3336917,26.7106072 37.7640869,26.3578946 C37.7640869,26.3578946 43.5569401,20.9999999 51,20.9999999 C58.4430599,20.9999999 61,23.1999934 61,20.9999998 Z" id="Rectangle-2" fill="#000000" sketch:type="MSShapeGroup" transform="translate(49.000000, 22.000000) scale(-1, 1) translate(-49.000000, -22.000000) "></path>
+                <path d="M25.0086946,16.8895251 C25.0627665,16.5481282 25.3215635,14.9141485 22.5149329,13.4571568 C19.7083024,12.0001651 14.9118938,11.5023631 10.5062384,12.5676316 C3.30787825,14.3081639 0.956130167,18.2690752 0.956130167,18.2690752 C0.629971492,18.706569 0.740422013,18.8275991 1.22069474,18.5465576 C1.22069474,18.5465576 7.78038766,14.1608294 15.1318112,15.3251805 C22.4832347,16.4895316 24.6645398,19.062433 25.0086946,16.8895251 Z" id="Rectangle-3" fill="#000000" sketch:type="MSShapeGroup"></path>
+            </g>
+        </g>
+    </g>
+</svg>
