@@ -25,7 +25,7 @@ var FacebookAggregator = function() {
       {
         name: 'first_name',
         selector: '._58gi',
-        modifier: this.parseFirstName
+        modifier: this.parseFirstname
       },
       {
         name: 'name',
