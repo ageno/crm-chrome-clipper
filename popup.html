@@ -34,10 +34,6 @@
   </script>
   <script id="vcard-form" type="x-tmpl-mustache">
     <div class="vcardform">
-      <div class="vcardform__group {{^data.city}}hidden{{/data.city}}">
-        <label>Miasto</label>
-        <input type="text" value="{{data.city}}" name="city">
-      </div>
       <div class="vcardform__group {{^data.websites}}hidden{{/data.websites}}">
         <label>Strona</label>
         {{^data.websites}}

@@ -34,10 +34,6 @@ var GoldenlineAggregator = function() {
         modifier: this.parseLastname
       },
       {
-        name: 'city',
-        selector: '[itemprop="addressLocality"]'
-      },
-      {
         name: 'avatar',
         selector: 'meta[itemprop="image"]',
         attribute: 'content',
