@@ -66,6 +66,9 @@ var showError = function(message) {
   $container.html(Mustache.render(templates.error, {
     message: message
   }))
+  $container.find('[data-reload]').on('click', function() {
+    window.location.reload()
+  })
 }
 
 var fetchSimilar = function(response) {
@@ -151,7 +154,11 @@ var showVcard = function(tab, user) {
         return $.trim(this.value).length > 0
       }).serializeJSON()
 
-      api.saveContact(contactData).success(showSavedContact)
+      api.saveContact(contactData)
+        .success(showSavedContact)
+        .fail(function() {
+          showError()
+        })
     })
 
     var $accountselect = $('#accountselect')
