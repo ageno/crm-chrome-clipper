@@ -9,9 +9,8 @@ var FacebookAggregator = function() {
       },
       {
         name: 'avatar',
-        selector: '.profilePic.img',
-        attribute: 'src',
-        modifier: this.getAvatar
+        selector: false,
+        value: this.getAvatar
       },
       {
         name: 'websites',
@@ -40,9 +39,8 @@ var FacebookAggregator = function() {
       },
       {
         name: 'avatar',
-        selector: '.profilePic.img',
-        attribute: 'src',
-        modifier: this.getAvatar
+        selector: false,
+        value: this.getAvatar
       },
       {
         name: 'websites',
@@ -67,8 +65,8 @@ FacebookAggregator.prototype.getAvatar = function() {
     var pattern = '\/(.+)\/about'
 
   var regex = new RegExp(pattern).exec(path)
-  if (regex && regex.length) {
-    username = regex[1] // get first group
+  if (regex && regex.length >= 2) {
+    var username = regex[1] // get first group
     return 'https://graph.facebook.com/' + username + '/picture?type=square'
   } else {
     return false

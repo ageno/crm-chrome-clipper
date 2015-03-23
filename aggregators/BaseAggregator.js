@@ -3,12 +3,18 @@ var BaseAggregator = function(type) {
 }
 
 BaseAggregator.prototype.getData = function() {
-  var that = this
+  var _this = this
 
   if (this.elements) {
     var data = {}
     this.elements.forEach(function(element) {
-      data[element.name] = element.multiple ? that.getMultipleData(element) : that.getSingleData(element)
+      if (typeof(element.value) == 'function') {
+        data[element.name] = element.value.call(_this)
+      } else if (element.value) {
+        data[element.name] = element.value
+      } else {
+        data[element.name] = element.multiple ? _this.getMultipleData(element) : _this.getSingleData(element)
+      }
     })
     data.is_company = (this.type == 'company') ? true : false
 
