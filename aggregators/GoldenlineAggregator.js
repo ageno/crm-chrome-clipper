@@ -1,5 +1,7 @@
 var GoldenlineAggregator = function() {
-  if (this.isCompany()) {
+  this.type = this.getType()
+
+  if (this.type == 'company') {
     this.elements = [
       {
         name: 'name',
@@ -16,10 +18,10 @@ var GoldenlineAggregator = function() {
         selector: '.website a[itemprop="url"]',
         multiple: true,
         attribute: 'href',
-        modifier: this.parseProtocol
+        modifier: this.parseWebsite
       }
     ]
-  } else {
+  } else if (this.type == 'person') {
     this.elements = [
       {
         name: 'first_name',
@@ -46,7 +48,7 @@ var GoldenlineAggregator = function() {
         selector: '[itemprop="address"] .pages a',
         multiple: true,
         attribute: 'href',
-        modifier: this.parseProtocol
+        modifier: this.parseWebsite
       }
     ]
   }
@@ -56,7 +58,3 @@ var GoldenlineAggregator = function() {
 
 GoldenlineAggregator.prototype = BaseAggregator.prototype
 GoldenlineAggregator.prototype.constructor = BaseAggregator
-
-GoldenlineAggregator.prototype.isCompany = function() {
-  return (document.querySelector('body').className.indexOf('employer') > -1) ? true : false
-}

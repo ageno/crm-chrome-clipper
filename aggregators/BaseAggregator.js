@@ -6,11 +6,13 @@ BaseAggregator.prototype.getData = function() {
   var data = {}
   var that = this
 
-  this.elements.forEach(function(element) {
-    data[element.name] = element.multiple ? that.getMultipleData(element) : that.getSingleData(element)
-  })
+  if (this.elements) {
+    this.elements.forEach(function(element) {
+      data[element.name] = element.multiple ? that.getMultipleData(element) : that.getSingleData(element)
+    })
+  }
 
-  data.is_company = this.isCompany()
+  data.is_company = (this.type == 'company') ? true : false
 
   return data
 }
@@ -32,11 +34,12 @@ BaseAggregator.prototype.getMultipleData = function(element) {
 BaseAggregator.prototype.getValueFromDOM = function(domElement, attribute, modifier) {
   var attribute = domElement.attributes ? domElement.attributes[attribute] : false
   var value = attribute ? attribute.textContent : domElement.innerText
+  value = value.trim()
 
   if (modifier)
-    value = modifier(value)
+    value = modifier.call(this, value)
 
-  return value ? value.trim() : null
+  return value || null
 }
 
 // some urls starts only with "//" also changes https for http
@@ -52,4 +55,26 @@ BaseAggregator.prototype.parseLastname = function(value) {
   var parts = value.split(/\s+/)
   parts.shift() //remove name
   return parts.join(' ')
+}
+
+BaseAggregator.prototype.parseEmail = function(value) {
+  return {
+    address: value
+  }
+}
+
+BaseAggregator.prototype.parseWebsite = function(value) {
+  return {
+    url: this.parseProtocol(value)
+  }
+}
+
+BaseAggregator.prototype.getType = function() {
+  if (document.querySelector('[itemtype="http://schema.org/Organization"]')) {
+    return 'company'
+  } else if (document.querySelector('[itemtype="http://schema.org/Person"]')) {
+    return 'person'
+  } else {
+    return false
+  }
 }

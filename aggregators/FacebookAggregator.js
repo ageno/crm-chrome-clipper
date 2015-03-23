@@ -11,13 +11,13 @@ var FacebookAggregator = function() {
         name: 'avatar',
         selector: '.profilePic.img',
         attribute: 'src',
-        modifier: this.parseProtocol
+        modifier: this.getAvatar
       },
       {
         name: 'websites',
-        selector: '._2kcr._42ef',
-        attribute: 'href',
-        modifier: this.parseProtocol
+        selector: '._2kcr._42ef[rel=nofollow]',
+        modifier: this.parseWebsite,
+        multiple: true
       }
     ]
   } else if (this.type == 'person') {
@@ -33,8 +33,10 @@ var FacebookAggregator = function() {
         modifier: this.parseLastname
       },
       {
-        name: 'city',
-        selector: '.fsm .uiList._4kg'
+        name: 'emails',
+        selector: '._4bl7._4bl8 [href^=mailto]',
+        multiple: true,
+        modifier: this.parseEmail
       },
       {
         name: 'avatar',
@@ -44,8 +46,9 @@ var FacebookAggregator = function() {
       },
       {
         name: 'websites',
-        selector: '._4bl9._2pis._2dbl ._c24._50f3 a[rel]',
-        modifier: this.parseProtocol
+        selector: '._4bl7._4bl8 [rel="nofollow me"]',
+        modifier: this.parseWebsite,
+        multiple: true
       }
     ]
   }
@@ -56,21 +59,18 @@ var FacebookAggregator = function() {
 FacebookAggregator.prototype = BaseAggregator.prototype
 FacebookAggregator.prototype.constructor = BaseAggregator
 
-FacebookAggregator.prototype.getType = function() {
-  if (document.querySelector('[itemtype="http://schema.org/Organization"]')) {
-    return 'company'
-  } else if (document.querySelector('[itemtype="http://schema.org/Person"]')) {
-    return 'person'
+FacebookAggregator.prototype.getAvatar = function() {
+  var path = window.location.pathname
+  if (this.type == 'company')
+    var pattern = '\/(.+)\/info'
+  else if (this.type == 'person')
+    var pattern = '\/(.+)\/about'
+
+  var regex = new RegExp(pattern).exec(path)
+  if (regex && regex.length) {
+    username = regex[1] // get first group
+    return 'https://graph.facebook.com/' + username + '/picture?type=square'
   } else {
     return false
   }
-}
-
-FacebookAggregator.prototype.getAvatar = function() {
-    // TODO: Only in profile page, get ID parameter from url when exist
-    var path = window.location.pathname
-    if (path.length) {
-        path = 'https://graph.facebook.com/' + path + '/picture?type=large'
-    }
-    return path;
 }

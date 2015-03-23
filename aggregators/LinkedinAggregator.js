@@ -16,7 +16,7 @@ var LinkedinAggregator = function() {
         selector: '.website a[itemprop="url"]',
         multiple: true,
         attribute: 'href',
-        modifier: this.parseProtocol
+        modifier: this.parseWebsite
       }
     ]
   } else {
@@ -46,7 +46,7 @@ var LinkedinAggregator = function() {
         selector: '[itemprop="address"] .pages a',
         multiple: true,
         attribute: 'href',
-        modifier: this.parseProtocol
+        modifier: this.parseWebsite
       }
     ]
   }
