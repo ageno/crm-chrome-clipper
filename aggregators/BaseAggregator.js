@@ -11,6 +11,12 @@ BaseAggregator.prototype.getData = function() {
       data[element.name] = element.multiple ? that.getMultipleData(element) : that.getSingleData(element)
     })
     data.is_company = (this.type == 'company') ? true : false
+
+    if (!data.websites)
+      data.websites = []
+    data.websites.push({
+      url: location.href
+    })
   }
 
   return data || false
