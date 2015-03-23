@@ -15,6 +15,7 @@
 
     api.getUser().then(function(user) {
       if (user) {
+        document.querySelector('.logout__name').innerText = user.email
         toggleGuestUser(false)
       }
 
