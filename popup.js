@@ -19,7 +19,6 @@ var changeSaveLabel = function(label) {
     btn.text('Dodaj kontakt')
 }
 
-var MinicrmUser
 var api
 chrome.runtime.getBackgroundPage(function(backgroundWindow) {
   api = new backgroundWindow.MinicrmApi()
@@ -30,7 +29,7 @@ chrome.runtime.getBackgroundPage(function(backgroundWindow) {
     api.getUser().then(function(user) {
       MinicrmUser = user
       if (MinicrmUser)
-        showVcard(tabs[0])
+        showVcard(tabs[0], api.user)
       else
         showLogin(tabs[0])
     })
@@ -129,10 +128,10 @@ var showAllFields = function() {
   $('.vcardform__group.hidden').removeClass('hidden')
 }
 
-var showVcard = function(tab) {
+var showVcard = function(tab, user) {
   chrome.tabs.sendMessage(tab.id, {action: 'getData'}, function(response) {
     $container.html(Mustache.render(templates.vcard.primary, {
-      user: MinicrmUser
+      user: user
     }))
 
     fillVcardForms(response)
@@ -193,15 +192,14 @@ var showLogin = function(tab, error) {
     togglePreloader('show')
 
     api.signin($form.serializeJSON())
-      .done(function() {
-        showVcard(tab)
+      .done(function(user) {
+        showVcard(tab, user)
       })
-      .fail(function(xhr) {
-        showLogin(tab, xhr.responseJSON)
+      .fail(function(data) {
+        showLogin(tab, data)
       })
       .always(function() {
         togglePreloader('hide')
       })
   })
 }
-

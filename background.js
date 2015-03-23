@@ -5,10 +5,10 @@ var MinicrmApi = function() {
     return MinicrmApi.prototype._singletonInstance;
   }
   MinicrmApi.prototype._singletonInstance = this;
-  
+
   var that = this
   this.getUser().then(function(user) {
-    if (user.accounts) {
+    if (user.accounts.length) {
       that.changeRequestAccount(user.accounts[0].url)
     }
   })
@@ -53,21 +53,32 @@ MinicrmApi.prototype.getLoggedStatus = function() {
 }
 
 MinicrmApi.prototype.signin = function(data) {
-  var that = this
-  return $.ajax({
+  var deferred = new $.Deferred()
+  var _this = this
+  $.ajax({
     url: 'http://minicrm.cc/api/account/signin',
     type: 'post',
     data: data,
     dataType: 'json',
     success: function(data) {
-      that.updateUser({
-        email: data.email,
-        accounts: data.accounts,
-        hasMultipleAccounts: (data.accounts.length > 1),
-        requestAccount: data.accounts[0] ? data.accounts[0].url : false
-      })
+      if (data.accounts && data.accounts.length) {
+        var user = {
+          email: data.email,
+          accounts: data.accounts,
+          hasMultipleAccounts: (data.accounts.length > 1),
+          requestAccount: data.accounts[0] ? data.accounts[0].url : false
+        }
+        _this.updateUser(user)
+        deferred.resolve(user)
+      } else {
+        deferred.reject({error: 'Użytkownik nie posiada przypisanego żadnego konta'})
+      }
+    },
+    error: function(data) {
+      deferred.reject(data.responseJSON)
     }
   })
+  return deferred.promise()
 }
 
 MinicrmApi.prototype.signout = function() {
