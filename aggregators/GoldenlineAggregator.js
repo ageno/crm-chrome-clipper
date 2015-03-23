@@ -58,3 +58,13 @@ var GoldenlineAggregator = function() {
 
 GoldenlineAggregator.prototype = BaseAggregator.prototype
 GoldenlineAggregator.prototype.constructor = BaseAggregator
+
+GoldenlineAggregator.prototype.getType = function() {
+  if (document.querySelector('body.employer-profile')) {
+    return 'company'
+  } else if (document.querySelector('body.userProfile')) {
+    return 'person'
+  } else {
+    return false
+  }
+}

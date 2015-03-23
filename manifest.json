@@ -23,6 +23,7 @@
         "aggregators/BaseAggregator.js",
         "aggregators/FacebookAggregator.js",
         "aggregators/GoldenlineAggregator.js",
+        "aggregators/LinkedinAggregator.js",
         "content.js"
       ]
     }

@@ -1,52 +1,36 @@
 var LinkedinAggregator = function() {
-  if (this.isCompany()) {
+  this.type = this.getType()
+
+  if (this.type == 'company') {
     this.elements = [
       {
         name: 'name',
-        selector: '[itemprop="name"]'
+        selector: '.name [itemprop="name"]'
       },
       {
         name: 'avatar',
-        selector: 'img[itemprop="logo"]',
+        selector: 'img.image',
         attribute: 'src',
         modifier: this.parseProtocol
-      },
-      {
-        name: 'websites',
-        selector: '.website a[itemprop="url"]',
-        multiple: true,
-        attribute: 'href',
-        modifier: this.parseWebsite
       }
     ]
-  } else {
+  } else if (this.type == 'person') {
     this.elements = [
       {
         name: 'first_name',
-        selector: '[itemprop="name"]',
+        selector: '.full-name',
         modifier: this.parseFirstname
       },
       {
         name: 'name',
-        selector: '[itemprop="name"]',
+        selector: '.full-name',
         modifier: this.parseLastname
       },
       {
-        name: 'city',
-        selector: '[itemprop="addressLocality"]'
-      },
-      {
         name: 'avatar',
-        selector: 'meta[itemprop="image"]',
-        attribute: 'content',
+        selector: '.profile-picture img',
+        attribute: 'src',
         modifier: this.parseProtocol
-      },
-      {
-        name: 'websites',
-        selector: '[itemprop="address"] .pages a',
-        multiple: true,
-        attribute: 'href',
-        modifier: this.parseWebsite
       }
     ]
   }
@@ -57,6 +41,12 @@ var LinkedinAggregator = function() {
 LinkedinAggregator.prototype = BaseAggregator.prototype
 LinkedinAggregator.prototype.constructor = BaseAggregator
 
-LinkedinAggregator.prototype.isCompany = function() {
-  return (document.querySelector('body').className.indexOf('employer') > -1) ? true : false
+BaseAggregator.prototype.getType = function() {
+  if (document.querySelector('#pagekey-biz-overview-internal')) {
+    return 'company'
+  } else if (document.querySelector('#pagekey-nprofile_view_nonself')) {
+    return 'person'
+  } else {
+    return false
+  }
 }
