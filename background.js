@@ -114,12 +114,12 @@ MinicrmApi.prototype.saveContact = function(data) {
 
 var supportedDomains = ['facebook.com', 'goldenline.pl', 'linkedin.com']
 var updateExtensionIcon = function(tabUrl) {
-  var iconPath = 'images/icon.png'
+  var iconPath = 'images/icon96.png'
 
   if (tabUrl) {
     supportedDomains.every(function(domain) {
       if (tabUrl.indexOf(domain) > -1) {
-        iconPath = 'images/icon_active.png'
+        iconPath = 'images/icon96-active.png'
         return false //break loop
       } else {
         return true
