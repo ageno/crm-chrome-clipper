@@ -1,5 +1,5 @@
 var LinkedinAggregator = function() {
-  this.type = this.getType()
+  this.type = this.getContactType()
 
   if (this.type == 'company') {
     this.elements = [
@@ -38,10 +38,10 @@ var LinkedinAggregator = function() {
   BaseAggregator.apply(this, arguments)
 }
 
-LinkedinAggregator.prototype = BaseAggregator.prototype
+LinkedinAggregator.prototype = new BaseAggregator()
 LinkedinAggregator.prototype.constructor = BaseAggregator
 
-BaseAggregator.prototype.getType = function() {
+LinkedinAggregator.prototype.getContactType = function() {
   if (document.querySelector('#pagekey-biz-overview-internal')) {
     return 'company'
   } else if (document.querySelector('#pagekey-nprofile_view_nonself')) {

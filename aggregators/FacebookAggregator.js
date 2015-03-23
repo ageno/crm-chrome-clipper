@@ -1,5 +1,5 @@
 var FacebookAggregator = function() {
-  this.type = this.getType()
+  this.type = this.getContactType()
 
   if (this.type == 'company') {
     this.elements = [
@@ -56,7 +56,7 @@ var FacebookAggregator = function() {
   BaseAggregator.apply(this, arguments)
 }
 
-FacebookAggregator.prototype = BaseAggregator.prototype
+FacebookAggregator.prototype = new BaseAggregator()
 FacebookAggregator.prototype.constructor = BaseAggregator
 
 FacebookAggregator.prototype.getAvatar = function() {
@@ -70,6 +70,16 @@ FacebookAggregator.prototype.getAvatar = function() {
   if (regex && regex.length) {
     username = regex[1] // get first group
     return 'https://graph.facebook.com/' + username + '/picture?type=square'
+  } else {
+    return false
+  }
+}
+
+FacebookAggregator.prototype.getContactType = function() {
+  if (document.querySelector('body.pagesTimelineLayout')) {
+    return 'company'
+  } else if (document.querySelector('body.timelineLayout:not(.pagesTimelineLayout)')) {
+    return 'person'
   } else {
     return false
   }

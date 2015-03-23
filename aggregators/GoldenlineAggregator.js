@@ -1,5 +1,5 @@
 var GoldenlineAggregator = function() {
-  this.type = this.getType()
+  this.type = this.getContactType()
 
   if (this.type == 'company') {
     this.elements = [
@@ -56,10 +56,10 @@ var GoldenlineAggregator = function() {
   BaseAggregator.apply(this, arguments)
 }
 
-GoldenlineAggregator.prototype = BaseAggregator.prototype
+GoldenlineAggregator.prototype = new BaseAggregator()
 GoldenlineAggregator.prototype.constructor = BaseAggregator
 
-GoldenlineAggregator.prototype.getType = function() {
+GoldenlineAggregator.prototype.getContactType = function() {
   if (document.querySelector('body.employer-profile')) {
     return 'company'
   } else if (document.querySelector('body.userProfile')) {

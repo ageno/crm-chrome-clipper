@@ -3,18 +3,17 @@ var BaseAggregator = function(type) {
 }
 
 BaseAggregator.prototype.getData = function() {
-  var data = {}
   var that = this
 
   if (this.elements) {
+    var data = {}
     this.elements.forEach(function(element) {
       data[element.name] = element.multiple ? that.getMultipleData(element) : that.getSingleData(element)
     })
+    data.is_company = (this.type == 'company') ? true : false
   }
 
-  data.is_company = (this.type == 'company') ? true : false
-
-  return data
+  return data || false
 }
 
 BaseAggregator.prototype.getSingleData = function(element) {
@@ -66,15 +65,5 @@ BaseAggregator.prototype.parseEmail = function(value) {
 BaseAggregator.prototype.parseWebsite = function(value) {
   return {
     url: this.parseProtocol(value)
-  }
-}
-
-BaseAggregator.prototype.getType = function() {
-  if (document.querySelector('[itemtype="http://schema.org/Organization"]')) {
-    return 'company'
-  } else if (document.querySelector('[itemtype="http://schema.org/Person"]')) {
-    return 'person'
-  } else {
-    return false
   }
 }
