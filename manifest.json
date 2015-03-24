@@ -22,7 +22,7 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "scripts": [ "lib/jquery.min.js", "background.js" ]
+    "scripts": [ "rollbar.js", "lib/rollbar.min.js", "lib/jquery.min.js", "background.js" ]
   },
   "content_scripts": [
     {
