@@ -27,11 +27,9 @@ chrome.runtime.getBackgroundPage(function(backgroundWindow) {
     togglePreloader('hide')
 
     api.getUser().then(function(user) {
-      MinicrmUser = user
-      if (MinicrmUser)
-        showVcard(tabs[0], api.user)
-      else
-        showLogin(tabs[0])
+      showVcard(tabs[0], user)
+    }).fail(function() {
+      showLogin(tabs[0])
     })
   })
 })

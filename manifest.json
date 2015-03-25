@@ -6,7 +6,9 @@
     "webNavigation",
     "activeTab",
     "storage",
-    "tabs"
+    "tabs",
+    "*://devcrm.ageno.pl/",
+    "*://*.devcrm.ageno.pl/"
   ],
   "icons": {
     "16": "images/icon16.png",
@@ -22,11 +24,12 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "scripts": [ "rollbar.js", "lib/rollbar.min.js", "lib/jquery.min.js", "background.js" ]
+    "scripts": [ "rollbar.js", "lib/rollbar.min.js", "lib/jquery.min.js", "background.js" ],
+    "persistent": true
   },
   "content_scripts": [
     {
-      "matches": ["https://facebook.com/*", "http://facebook.com/*", "https://www.facebook.com/*", "http://www.facebook.com/*"],
+      "matches": ["*://www.facebook.com/*"],
       "js": [
         "aggregators/BaseAggregator.js",
         "aggregators/FacebookAggregator.js",
@@ -34,7 +37,7 @@
       ]
     },
     {
-      "matches": ["https://linkedin.com/*", "http://linkedin.com/*", "https://www.linkedin.com/*", "http://www.linkedin.com/*"],
+      "matches": ["*://www.linkedin.com/*"],
       "js": [
         "aggregators/BaseAggregator.js",
         "aggregators/LinkedinAggregator.js",
@@ -42,7 +45,7 @@
       ]
     },
     {
-      "matches": ["https://goldenline.pl/*", "http://goldenline.pl/*", "https://www.goldenline.pl/*", "http://www.goldenline.pl/*"],
+      "matches": ["*://www.goldenline.pl/*"],
       "js": [
         "aggregators/BaseAggregator.js",
         "aggregators/GoldenlineAggregator.js",

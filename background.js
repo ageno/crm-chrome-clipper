@@ -5,49 +5,18 @@ var MinicrmApi = function() {
   MinicrmApi.prototype._singletonInstance = this;
 
   var that = this
-  this.getUser().then(function(user) {
-    if (user.accounts.length) {
-      that.changeRequestAccount(user.accounts[0].url)
-    }
-  })
 }
 
 MinicrmApi.prototype.getUser = function() {
-  var deferred = new $.Deferred()
-  var that = this
-
-  chrome.storage.local.get('MinicrmUser', function(data) {
-    that.user = data.MinicrmUser
-    deferred.resolve(data.MinicrmUser)
-  })
-
-  return deferred.promise()
-}
-
-MinicrmApi.prototype.changeRequestAccount = function(slug) {
-  this.user.requestAccount = slug
-
-  this.user.accounts.forEach(function(account) {
-    if (account.url == slug)
-      account.isDefault = true
-    else
-      account.isDefault = false
-  })
-
-  this.updateUser(this.user)
-}
-
-MinicrmApi.prototype.updateUser = function(userObject) {
-  this.user = userObject
-  chrome.storage.local.set({'MinicrmUser': userObject})
-}
-
-MinicrmApi.prototype.getLoggedStatus = function() {
   return $.ajax({
-    url: 'http://devcrm.ageno.pl/api/is_logged',
+    url: 'http://devcrm.ageno.pl/api/account/user',
     type: 'get',
     dataType: 'json'
   })
+}
+
+MinicrmApi.prototype.changeRequestAccount = function(slug) {
+  this.requestAccount = slug
 }
 
 MinicrmApi.prototype.signin = function(data) {
@@ -60,14 +29,8 @@ MinicrmApi.prototype.signin = function(data) {
     dataType: 'json',
     success: function(data) {
       if (data.accounts && data.accounts.length) {
-        var user = {
-          email: data.email,
-          accounts: data.accounts,
-          hasMultipleAccounts: (data.accounts.length > 1),
-          requestAccount: data.accounts[0] ? data.accounts[0].url : false
-        }
-        _this.updateUser(user)
-        deferred.resolve(user)
+        _this.requestAccount = data.accounts[0].url
+        deferred.resolve(data)
       } else {
         deferred.reject({error: 'Użytkownik nie posiada przypisanego żadnego konta'})
       }
@@ -80,9 +43,6 @@ MinicrmApi.prototype.signin = function(data) {
 }
 
 MinicrmApi.prototype.signout = function() {
-  this.updateUser(false)
-  chrome.storage.local.clear()
-
   return $.ajax({
     url: 'http://devcrm.ageno.pl/api/account/signout',
     type: 'get',
@@ -93,7 +53,7 @@ MinicrmApi.prototype.signout = function() {
 MinicrmApi.prototype.getContacts = function(data) {
   var that = this
   return $.ajax({
-    url: 'http://' + that.user.requestAccount + '.devcrm.ageno.pl/api/contact',
+    url: 'http://' + that.requestAccount + '.devcrm.ageno.pl/api/contact',
     type: 'get',
     data: data,
     dataType: 'json'
@@ -103,7 +63,7 @@ MinicrmApi.prototype.getContacts = function(data) {
 MinicrmApi.prototype.saveContact = function(data) {
   var that = this
   return $.ajax({
-    url: 'http://' + that.user.requestAccount + '.devcrm.ageno.pl/api/contact',
+    url: 'http://' + that.requestAccount + '.devcrm.ageno.pl/api/contact',
     type: 'post',
     data: data,
     dataType: 'json'
