@@ -5,7 +5,7 @@ var MinicrmApi = function() {
   MinicrmApi.prototype._singletonInstance = this;
 
   var that = this
-  this.requestDomain = 'devcrm.ageno.pl';
+  this.requestDomain = 'minicrm.cc';
 }
 
 MinicrmApi.prototype.getUser = function() {
