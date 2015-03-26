@@ -154,6 +154,7 @@ var fetchSimilar = function(response) {
 
 var showAllFields = function() {
   $('.vcardform__group.hidden').removeClass('hidden')
+  $('#showallfields').closest('.vcardform__group').remove()
 }
 
 var showVcard = function(tab, user) {
@@ -200,7 +201,6 @@ var showVcard = function(tab, user) {
 
       if ($checkbox.is(':checked')) {
         showAllFields()
-        $wrapper.remove()
       }
     })
 
