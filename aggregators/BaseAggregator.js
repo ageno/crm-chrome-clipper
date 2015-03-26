@@ -74,6 +74,12 @@ BaseAggregator.prototype.parseEmail = function(value) {
   }
 }
 
+BaseAggregator.prototype.parsePhone = function(value) {
+  return {
+    number: value
+  }
+}
+
 BaseAggregator.prototype.parseWebsite = function(value) {
   return {
     url: this.parseProtocol(value)

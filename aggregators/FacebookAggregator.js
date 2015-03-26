@@ -13,6 +13,12 @@ var FacebookAggregator = function() {
         value: this.getAvatar
       },
       {
+        name: 'phones',
+        selector: '._2n7q._42ef._c24._50f3',
+        multiple: true,
+        modifier: this.parsePhone
+      },
+      {
         name: 'websites',
         selector: '._2kcr._42ef[rel=nofollow]',
         modifier: this.parseWebsite,
@@ -58,11 +64,34 @@ FacebookAggregator.prototype = new BaseAggregator()
 FacebookAggregator.prototype.constructor = BaseAggregator
 
 FacebookAggregator.prototype.getAvatar = function() {
-  var path = window.location.pathname
-  if (this.type == 'company')
-    var pattern = '\/(.+)\/info'
-  else if (this.type == 'person')
-    var pattern = '\/(.+)\/about'
+  var path = window.location.pathname + window.location.search
+  /*
+    // for simple tests  
+    var regex = new RegExp(pattern)
+    tests.forEach(function(path) {
+      console.log(regex.exec(path))
+    })
+  */
+  if (this.type == 'company') {
+    /*
+      var tests = [
+        '/sushidopl',
+        '/sushidopl?fref=ts',
+        '/sushidopl/info?tab=overview',
+        '/pages/PZ2SOMSiT/295807223800306?fref=ts',
+        '/ageno.internet/info?tab=overview',
+      ]
+    */
+    var pattern = /\/(?:pages\/[a-zA-Z0-9]*\/)?([^\/?&]+)(?:\?|\/)?/
+  } else if (this.type == 'person') {
+    /*
+      var tests = [
+        '/profile.php?id=100006937815053&fref=ts',
+        '/Wujku',
+      ]
+    */
+    var pattern = /\/(?:profile\.php\?id=)?([^\/?&]+)(?:\\?|\/)?/
+  }
 
   var regex = new RegExp(pattern).exec(path)
   if (regex && regex.length >= 2) {
