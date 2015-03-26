@@ -69,6 +69,20 @@ var showError = function(message) {
   })
 }
 
+var deepMerge = function(compareAttr, first, second) {
+  second.forEach(function(element, index) {
+    var searchResults = $.grep(first, function(searchElement) {
+      return element[compareAttr] == searchElement[compareAttr]
+    })
+
+    if (searchResults.length == 0) {
+      first.push(element)
+    }
+  })
+
+  return first
+}
+
 var fetchSimilar = function(response) {
   if (!response)
     return
@@ -105,8 +119,21 @@ var fetchSimilar = function(response) {
 
           var merged = response
           for (key in contact) {
-            if (contact[key] instanceof Array) {
-              merged[key] = $.merge([], contact[key], response[key])
+            if ($.isArray(contact[key])) {
+              var compareProp = false
+              switch (key) {
+                case 'websites':
+                  compareProp = 'url'
+                  break;
+                case 'emails':
+                  compareProp = 'address'
+                  break;
+                case 'phones':
+                  compareProp = 'number'
+                  break;
+              }
+              if (compareProp)
+                merged[key] = deepMerge(compareProp, merged[key] || [], contact[key])
             } else if (contact[key]) {
               merged[key] = contact[key]
             }
