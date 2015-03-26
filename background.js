@@ -4,7 +4,8 @@ var MinicrmApi = function() {
   }
   MinicrmApi.prototype._singletonInstance = this;
 
-  this.requestDomain = 'minicrm.cc';
+  this.requestDomain = 'minicrm.cc'
+  this.pendingGetContactsXhr = false
 }
 
 MinicrmApi.prototype.getUser = function() {
@@ -77,8 +78,12 @@ MinicrmApi.prototype.getContacts = function(data) {
   var deferred = new $.Deferred()
   var _this = this
 
+  if (this.pendingGetContactsXhr) {
+    this.pendingGetContactsXhr.abort()
+  }
+
   this.getRequestAccount().then(function(slug) {
-    $.ajax({
+    _this.pendingGetContactsXhr = $.ajax({
       url: 'http://' + slug + '.' + _this.requestDomain + '/api/contact',
       type: 'get',
       data: data,
@@ -88,6 +93,9 @@ MinicrmApi.prototype.getContacts = function(data) {
       },
       error: function(data) {
         deferred.reject(data.responseJSON)
+      },
+      always: function() {
+        _this.pendingGetContactsXhr = false
       }
     })
   })
