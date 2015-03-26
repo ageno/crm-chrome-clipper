@@ -4,11 +4,11 @@ var MinicrmApi = function() {
   }
   MinicrmApi.prototype._singletonInstance = this;
 
-  var that = this
   this.requestDomain = 'minicrm.cc';
 }
 
 MinicrmApi.prototype.getUser = function() {
+  var _this = this
   return $.ajax({
     url: 'http://' + this.requestDomain + '/api/account/user',
     type: 'get',
@@ -17,7 +17,27 @@ MinicrmApi.prototype.getUser = function() {
 }
 
 MinicrmApi.prototype.changeRequestAccount = function(slug) {
+  var deferred = new $.Deferred()
+  var _this = this
+
   this.requestAccount = slug
+  chrome.storage.local.set({'requestAccount': this.requestAccount}, function() {
+    deferred.resolve(_this.requestAccount)
+  })
+
+  return deferred.promise()
+}
+
+MinicrmApi.prototype.getRequestAccount = function() {
+  var deferred = new $.Deferred()
+  var _this = this
+
+  chrome.storage.local.get('requestAccount', function(response) {
+    _this.requestAccount = response.requestAccount
+    deferred.resolve(_this.requestAccount)
+  })
+
+  return deferred.promise()
 }
 
 MinicrmApi.prototype.signin = function(data) {
@@ -30,8 +50,9 @@ MinicrmApi.prototype.signin = function(data) {
     dataType: 'json',
     success: function(data) {
       if (data.accounts && data.accounts.length) {
-        _this.requestAccount = data.accounts[0].url
-        deferred.resolve(data)
+        _this.changeRequestAccount(data.accounts[0].url).then(function() {
+          deferred.resolve(data)
+        })
       } else {
         deferred.reject({error: 'Użytkownik nie posiada przypisanego żadnego konta'})
       }
@@ -44,6 +65,7 @@ MinicrmApi.prototype.signin = function(data) {
 }
 
 MinicrmApi.prototype.signout = function() {
+  chrome.storage.local.clear()
   return $.ajax({
     url: 'http://' + this.requestDomain + '/api/account/signout',
     type: 'get',
@@ -52,22 +74,47 @@ MinicrmApi.prototype.signout = function() {
 }
 
 MinicrmApi.prototype.getContacts = function(data) {
-  return $.ajax({
-    url: 'http://' + this.requestAccount + '.' + this.requestDomain + '/api/contact',
-    type: 'get',
-    data: data,
-    dataType: 'json'
+  var deferred = new $.Deferred()
+  var _this = this
+
+  this.getRequestAccount().then(function(slug) {
+    $.ajax({
+      url: 'http://' + slug + '.' + _this.requestDomain + '/api/contact',
+      type: 'get',
+      data: data,
+      dataType: 'json',
+      success: function(data) {
+        deferred.resolve(data)
+      },
+      error: function(data) {
+        deferred.reject(data.responseJSON)
+      }
+    })
   })
+
+  return deferred.promise()
 }
 
 MinicrmApi.prototype.saveContact = function(data) {
-  var that = this
-  return $.ajax({
-    url: 'http://' + that.requestAccount + '.' + this.requestDomain + '/api/contact',
-    type: 'post',
-    data: data,
-    dataType: 'json'
+  var deferred = new $.Deferred()
+  var _this = this
+
+  this.getRequestAccount().then(function(slug) {
+    $.ajax({
+      url: 'http://' + slug + '.' + _this.requestDomain + '/api/contact',
+      type: 'post',
+      data: data,
+      dataType: 'json',
+      success: function(data) {
+        deferred.resolve(data)
+      },
+      error: function(data) {
+        deferred.reject(data.responseJSON)
+      }
+    })
   })
+
+  return deferred.promise()
 }
 
 var supportedDomains = ['facebook.com', 'goldenline.pl', 'linkedin.com']

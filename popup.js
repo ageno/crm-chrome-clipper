@@ -24,12 +24,23 @@ chrome.runtime.getBackgroundPage(function(backgroundWindow) {
   api = new backgroundWindow.MinicrmApi()
 
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    togglePreloader('hide')
 
     api.getUser().then(function(user) {
-      showVcard(tabs[0], user)
+      api.getRequestAccount().then(function(slug) {
+        // helper params used in view
+        user.hasMultipleAccounts = !!user.accounts.length
+        user.accounts.forEach(function(account) {
+          if (account.url == slug)
+            account.isDefault = true
+          else
+            account.isDefault = false
+        })
+        showVcard(tabs[0], user)
+      })
     }).fail(function() {
       showLogin(tabs[0])
+    }).always(function() {
+      togglePreloader('hide')
     })
   })
 })
@@ -181,7 +192,7 @@ var showVcard = function(tab, user) {
       }).serializeJSON()
 
       api.saveContact(contactData)
-        .success(showSavedContact)
+        .then(showSavedContact)
         .fail(function() {
           showError()
         })
