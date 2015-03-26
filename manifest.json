@@ -8,7 +8,9 @@
     "storage",
     "tabs",
     "*://devcrm.ageno.pl/",
-    "*://*.devcrm.ageno.pl/"
+    "*://*.devcrm.ageno.pl/",
+    "*://minicrm.cc/",
+    "*://*.minicrm.cc/"
   ],
   "icons": {
     "16": "images/icon16.png",
