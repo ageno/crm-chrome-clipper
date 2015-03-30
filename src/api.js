@@ -57,7 +57,7 @@ MinicrmApi.prototype.decorateUserAccounts = function(user) {
   var deferred = new $.Deferred()
   var _this = this
 
-  this.getRequestAccount().then(function(slug) {
+  _this.getRequestAccount().always(function(slug) {
     if (user.accounts && user.accounts.length) {
       // helper params used in view
       user.hasMultipleAccounts = !!user.accounts.length
@@ -81,7 +81,9 @@ MinicrmApi.prototype.decorateUserAccounts = function(user) {
         deferred.resolve(user)
       }
     } else {
-      deferred.reject({error: 'Użytkownik nie posiada przypisanego żadnego konta'})
+      _this.signout().always(function() {
+        deferred.reject({error: 'Użytkownik ' + user.email + ' nie posiada przypisanego żadnego konta'})
+      })
     }
   })
 
@@ -95,14 +97,18 @@ MinicrmApi.prototype.getUser = function() {
     url: this.getRequestPath() + '/api/account/user',
     type: 'get',
     dataType: 'json',
-    context: this,
-    success: function(user) {
-      deferred.resolve(this.decorateUserAccounts(user))
-    },
-    error: function(jqXHR) {
-      deferred.reject(jqXHR.responseJSON)
-    },
+    context: this
   })
+    .fail(function() {
+      deferred.reject()
+    })
+    .then(this.decorateUserAccounts)
+      .done(function(user) {
+        deferred.resolve(user)
+      })
+      .fail(function(message) {
+        deferred.reject(message)
+      })
 
   return deferred.promise()
 }
@@ -115,14 +121,19 @@ MinicrmApi.prototype.signin = function(userData) {
     type: 'post',
     data: userData,
     dataType: 'json',
-    context: this,
-    success: function(user) {
-      deferred.resolve(this.decorateUserAccounts(user))
-    },
-    error: function(jqXHR) {
-      deferred.reject(jqXHR.responseJSON)
-    }
+    context: this
   })
+    .fail(function(jqXHR) {
+      deferred.reject(jqXHR.responseJSON)
+    })
+    .then(this.decorateUserAccounts)
+      .done(function(user) {
+        deferred.resolve(user)
+      })
+      .fail(function(message) {
+        deferred.reject(message)
+      })
+
   return deferred.promise()
 }
 
@@ -136,7 +147,6 @@ MinicrmApi.prototype.signout = function() {
 }
 
 MinicrmApi.prototype.getContacts = function(requestData) {
-  var deferred = new $.Deferred()
   var _this = this
 
   // kill older request which hasn't been ended yet
@@ -144,45 +154,26 @@ MinicrmApi.prototype.getContacts = function(requestData) {
     this.pendingGetContactsXhr.abort()
   }
 
-  this.getRequestAccountPath().then(function(path) {
-    _this.pendingGetContactsXhr = $.ajax({
+  return this.getRequestAccountPath().then(function(path) {
+    return _this.pendingGetContactsXhr = $.ajax({
       url: path + '/api/contact',
       type: 'get',
       data: requestData,
       dataType: 'json',
-      success: function(data) {
-        deferred.resolve(data)
-      },
-      error: function(jqXHR) {
-        deferred.reject(jqXHR.responseJSON)
-      },
       always: function() {
         _this.pendingGetContactsXhr = false
       }
     })
   })
-
-  return deferred.promise()
 }
 
 MinicrmApi.prototype.saveContact = function(contact) {
-  var deferred = new $.Deferred()
-  var _this = this
-
-  this.getRequestAccountPath().then(function(path) {
-    $.ajax({
+  return this.getRequestAccountPath().then(function(path) {
+    return $.ajax({
       url: path + '/api/contact',
       type: 'post',
       data: contact,
-      dataType: 'json',
-      success: function(data) {
-        deferred.resolve(data)
-      },
-      error: function(jqXHR) {
-        deferred.reject(jqXHR.responseJSON)
-      }
+      dataType: 'json'
     })
   })
-
-  return deferred.promise()
 }

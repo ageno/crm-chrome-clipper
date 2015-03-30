@@ -19,13 +19,12 @@ popup.templates = {
 popup.init = function() {
   chrome.runtime.getBackgroundPage(function(backgroundWindow) {
     popup.api = new backgroundWindow.MinicrmApi()
-    popup.api.getUser().then(function(decoratorPromise) {
-      decoratorPromise.always(popup.goto.vcard)
-    }).fail(function(message) {
-      popup.goto.login(message)
-    }).always(function() {
-      popup.preloader.hide()
-    })
+    popup.api.getUser()
+      .done(popup.goto.vcard)
+      .fail(popup.goto.login)
+      .always(function() {
+        popup.preloader.hide()
+      })
   })
 }
 
@@ -144,9 +143,9 @@ popup.fetchSimilarContacts = function(contact) {
 // views namespace
 popup.goto = {}
 
-popup.goto.login = function(error) {
+popup.goto.login = function(errorText) {
   popup.$container.html(Mustache.render(popup.templates.login, {
-    error: error
+    error: errorText
   }))
 
   var $form = popup.$container.find('form')
@@ -156,9 +155,7 @@ popup.goto.login = function(error) {
 
     popup.api.signin($form.serializeJSON())
       .done(function(user) {
-        popup.api.getUser().always(function(decoratorPromise) {
-          decoratorPromise.then(popup.goto.vcard)
-        })
+        popup.api.getUser().always(popup.goto.vcard)
       })
       .fail(function(message) {
         popup.goto.login(message)
@@ -222,7 +219,7 @@ popup.goto.vcard = function(user) {
 
         popup.preloader.show()
         popup.api.saveContact(contactData)
-          .then(popup.goto.saved)
+          .done(popup.goto.saved)
           .fail(function() {
             popup.goto.error()
           })

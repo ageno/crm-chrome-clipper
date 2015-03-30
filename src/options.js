@@ -15,17 +15,15 @@ options.toggleGuestUser = function(guest) {
 chrome.runtime.getBackgroundPage(function(backgroundWindow) {
   var api = new backgroundWindow.MinicrmApi()
 
-  api.getUser().then(function(decoratorPromise) {
-    decoratorPromise.then(function() {
-      if (user) {
-        document.querySelector('.logout__name').innerText = user.email
-        options.toggleGuestUser(false)
-      }
+  api.getUser().then(function(user) {
+    if (user) {
+      document.querySelector('.logout__name').innerText = user.email
+      options.toggleGuestUser(false)
+    }
 
-      document.querySelector('[data-logout]').addEventListener('click', function() {
-        api.signout()
-        options.toggleGuestUser(true)
-      })
+    document.querySelector('[data-logout]').addEventListener('click', function() {
+      api.signout()
+      options.toggleGuestUser(true)
     })
   })
 })
