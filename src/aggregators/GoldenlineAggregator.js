@@ -1,4 +1,4 @@
-var GoldenlineAggregator = function() {
+var CrmAggregator = function() {
   this.type = this.getContactType()
 
   if (this.type == 'company') {
@@ -49,13 +49,13 @@ var GoldenlineAggregator = function() {
     ]
   }
 
-  BaseAggregator.apply(this, arguments)
+  CrmBaseAggregator.apply(this, arguments)
 }
 
-GoldenlineAggregator.prototype = new BaseAggregator()
-GoldenlineAggregator.prototype.constructor = BaseAggregator
+CrmAggregator.prototype = new CrmBaseAggregator()
+CrmAggregator.prototype.constructor = CrmBaseAggregator
 
-GoldenlineAggregator.prototype.getContactType = function() {
+CrmAggregator.prototype.getContactType = function() {
   if (document.querySelector('body.employer-profile')) {
     return 'company'
   } else if (document.querySelector('body.userProfile')) {

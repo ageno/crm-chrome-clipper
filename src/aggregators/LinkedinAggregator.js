@@ -1,4 +1,4 @@
-var LinkedinAggregator = function() {
+var CrmAggregator = function() {
   this.type = this.getContactType()
 
   if (this.type == 'company') {
@@ -35,13 +35,13 @@ var LinkedinAggregator = function() {
     ]
   }
 
-  BaseAggregator.apply(this, arguments)
+  CrmBaseAggregator.apply(this, arguments)
 }
 
-LinkedinAggregator.prototype = new BaseAggregator()
-LinkedinAggregator.prototype.constructor = BaseAggregator
+CrmAggregator.prototype = new CrmBaseAggregator()
+CrmAggregator.prototype.constructor = CrmBaseAggregator
 
-LinkedinAggregator.prototype.getContactType = function() {
+CrmAggregator.prototype.getContactType = function() {
   if (document.querySelector('#pagekey-biz-overview-internal')) {
     return 'company'
   } else if (document.querySelector('#pagekey-nprofile_view_nonself')) {

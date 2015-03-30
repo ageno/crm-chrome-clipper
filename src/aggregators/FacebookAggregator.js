@@ -1,4 +1,4 @@
-var FacebookAggregator = function() {
+var CrmAggregator = function() {
   this.type = this.getContactType()
 
   if (this.type == 'company') {
@@ -57,13 +57,13 @@ var FacebookAggregator = function() {
     ]
   }
 
-  BaseAggregator.apply(this, arguments)
+  CrmBaseAggregator.apply(this, arguments)
 }
 
-FacebookAggregator.prototype = new BaseAggregator()
-FacebookAggregator.prototype.constructor = BaseAggregator
+CrmAggregator.prototype = new CrmBaseAggregator()
+CrmAggregator.prototype.constructor = CrmBaseAggregator
 
-FacebookAggregator.prototype.getAvatar = function() {
+CrmAggregator.prototype.getAvatar = function() {
   var path = window.location.pathname + window.location.search
   /*
     // for simple tests  
@@ -102,7 +102,7 @@ FacebookAggregator.prototype.getAvatar = function() {
   }
 }
 
-FacebookAggregator.prototype.getContactType = function() {
+CrmAggregator.prototype.getContactType = function() {
   if (document.querySelector('body.pagesTimelineLayout')) {
     return 'company'
   } else if (document.querySelector('body.timelineLayout:not(.pagesTimelineLayout)')) {

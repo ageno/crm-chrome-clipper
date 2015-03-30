@@ -1,8 +1,8 @@
-var BaseAggregator = function(type) {
+var CrmBaseAggregator = function(type) {
   this.data = this.getData()
 }
 
-BaseAggregator.prototype.getData = function() {
+CrmBaseAggregator.prototype.getData = function() {
   var _this = this
 
   if (this.elements) {
@@ -28,12 +28,12 @@ BaseAggregator.prototype.getData = function() {
   return data || false
 }
 
-BaseAggregator.prototype.getSingleData = function(element) {
+CrmBaseAggregator.prototype.getSingleData = function(element) {
   var domElement = document.querySelector(element.selector)
   return domElement ? this.getValueFromDOM(domElement, element.attribute, element.modifier) : null
 }
 
-BaseAggregator.prototype.getMultipleData = function(element) {
+CrmBaseAggregator.prototype.getMultipleData = function(element) {
   var domElements = document.querySelectorAll(element.selector)
   var data = []
   for (var i = domElements.length - 1; i >= 0; i--) {
@@ -42,7 +42,7 @@ BaseAggregator.prototype.getMultipleData = function(element) {
   return data.length ? data : null
 }
 
-BaseAggregator.prototype.getValueFromDOM = function(domElement, attribute, modifier) {
+CrmBaseAggregator.prototype.getValueFromDOM = function(domElement, attribute, modifier) {
   var attribute = domElement.attributes ? domElement.attributes[attribute] : false
   var value = attribute ? attribute.textContent : domElement.innerText
   value = value.trim()
@@ -54,33 +54,33 @@ BaseAggregator.prototype.getValueFromDOM = function(domElement, attribute, modif
 }
 
 // some urls starts only with "//" also changes https for http
-BaseAggregator.prototype.parseProtocol = function(value) {
+CrmBaseAggregator.prototype.parseProtocol = function(value) {
   return value.replace(/.*\/\//, 'http://')
 }
 
-BaseAggregator.prototype.parseFirstname = function(value) {
+CrmBaseAggregator.prototype.parseFirstname = function(value) {
   return value.split(/\s+/)[0]
 }
 
-BaseAggregator.prototype.parseLastname = function(value) {
+CrmBaseAggregator.prototype.parseLastname = function(value) {
   var parts = value.split(/\s+/)
   parts.shift() //remove name
   return parts.join(' ')
 }
 
-BaseAggregator.prototype.parseEmail = function(value) {
+CrmBaseAggregator.prototype.parseEmail = function(value) {
   return {
     address: value
   }
 }
 
-BaseAggregator.prototype.parsePhone = function(value) {
+CrmBaseAggregator.prototype.parsePhone = function(value) {
   return {
     number: value
   }
 }
 
-BaseAggregator.prototype.parseWebsite = function(value) {
+CrmBaseAggregator.prototype.parseWebsite = function(value) {
   return {
     url: this.parseProtocol(value)
   }
