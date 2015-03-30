@@ -310,6 +310,7 @@ a:hover {
 }
 
 .similaritem {
+  position: relative;
   padding: 3px 20px;
   margin: 3px -20px;
   display: flex;
@@ -361,7 +362,6 @@ a:hover {
 .similaritem__details {
   padding-top: 5px;
   padding-left: 5px;
-  position: relative;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -372,7 +372,7 @@ a:hover {
   display: none;
   position: absolute;
   top: 50%;
-  right: 3px;
+  right: 20px;
   height: 24px;
   margin-top: -12px;
   padding: 0 6px;
