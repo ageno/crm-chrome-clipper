@@ -5,10 +5,9 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container container--loading" id="container">
-  </div>
+  <div class="container container--loading" id="container"></div>
 
-  <script id="vcard-header" type="x-tmpl-mustache">
+  <script id="template-vcard-header" type="x-tmpl-mustache">
     <div class="vcardheader">
       <div class="vcardheader__avatar {{^data.avatar}}vcardheader__avatar--empty{{/data.avatar}}">
         {{#data.avatar}}
@@ -32,7 +31,7 @@
       </div>
     </div>
   </script>
-  <script id="vcard-form" type="x-tmpl-mustache">
+  <script id="template-vcard-form" type="x-tmpl-mustache">
     <div class="vcardform">
       <div class="vcardform__group {{^data.websites}}hidden{{/data.websites}}">
         <label>Strona</label>
@@ -76,7 +75,7 @@
       </div>
     </div>
   </script>
-  <script id="vcard" type="x-tmpl-mustache">
+  <script id="template-vcard" type="x-tmpl-mustache">
     <form class="vcard" id="contactform" novalidate>
       <div id="vcardheader"></div>
       <div id="vcardsimilar"></div>
@@ -98,7 +97,7 @@
       </div>
     </form>
   </script>
-  <script id="vcard-saved" type="x-tmpl-mustache">
+  <script id="template-saved" type="x-tmpl-mustache">
     <div class="saved">
       <div class="saved__inner">
         <div class="saved__avatar {{^avatar}}saved__avatar--empty{{/avatar}}">
@@ -126,7 +125,7 @@
       </div>
     </div>
   </script>
-  <script id="vcard-similar" type="x-tmpl-mustache">
+  <script id="template-vcard-similar" type="x-tmpl-mustache">
     {{#hasContacts}}
     <div class="similar">
       <h4 class="similar__header">Podobne kontakty z MiniCRM.pl</h3>

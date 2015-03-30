@@ -5,12 +5,10 @@
   "permissions": [
     "webNavigation",
     "activeTab",
-    "storage",
     "tabs",
+    "storage",
     "*://devcrm.ageno.pl/",
-    "*://*.devcrm.ageno.pl/",
-    "*://minicrm.cc/",
-    "*://*.minicrm.cc/"
+    "*://*.devcrm.ageno.pl/"
   ],
   "icons": {
     "16": "images/icon16.png",
@@ -26,7 +24,7 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "scripts": [ "rollbar.js", "lib/rollbar.min.js", "lib/jquery.min.js", "background.js" ],
+    "scripts": [ "rollbar.js", "lib/rollbar.min.js", "lib/jquery.min.js", "background.js", "api.js" ],
     "persistent": true
   },
   "content_scripts": [

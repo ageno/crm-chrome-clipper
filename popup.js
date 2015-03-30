@@ -1,89 +1,76 @@
-var $container = $('.container')
-var togglePreloader = function(action) {
-  if (!action) {
-    action = $container.hasClass('container--loading') ? 'hide' : 'show'
-  }
+'use strict'
 
-  if (action == 'hide')
-    $container.removeClass('container--loading')
-  else
-    $container.addClass('container--loading')
-}
+// namespace
+var popup = {}
 
-var changeSaveLabel = function(label) {
-  var btn = $('.vcardsave__btn')
-
-  if (label == 'save')
-    btn.text('Zapisz kontakt')
-  else
-    btn.text('Dodaj kontakt')
-}
-
-var api
-chrome.runtime.getBackgroundPage(function(backgroundWindow) {
-  api = new backgroundWindow.MinicrmApi()
-
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-
-    api.getUser().then(function(user) {
-      api.getRequestAccount().then(function(slug) {
-        // helper params used in view
-        user.hasMultipleAccounts = !!user.accounts.length
-        user.accounts.forEach(function(account) {
-          if (account.url == slug)
-            account.isDefault = true
-          else
-            account.isDefault = false
-        })
-        showVcard(tabs[0], user)
-      })
-    }).fail(function() {
-      showLogin(tabs[0])
-    }).always(function() {
-      togglePreloader('hide')
-    })
-  })
-})
-
-
-var templates = {
+popup.$container = $('.container')
+popup.templates = {
   login: $('#template-login').html(),
   vcard: {
-    primary: $('#vcard').html(),
-    similar: $('#vcard-similar').html(),
-    header: $('#vcard-header').html(),
-    form: $('#vcard-form').html()
+    primary: $('#template-vcard').html(),
+    similar: $('#template-vcard-similar').html(),
+    header: $('#template-vcard-header').html(),
+    form: $('#template-vcard-form').html()
   },
-  vcardSaved: $('#vcard-saved').html(),
+  vcardSaved: $('#template-saved').html(),
   error: $('#template-error').html(),
 }
 
-var fillVcardForms = function(data) {
-  $('#vcardform').html(Mustache.render(templates.vcard.form, {
-    data: data
-  }))
-  $('#vcardheader').html(Mustache.render(templates.vcard.header, {
-    data: data
-  }))
-}
+popup.init = function() {
+  chrome.runtime.getBackgroundPage(function(backgroundWindow) {
+    popup.api = new backgroundWindow.MinicrmApi()
 
-var showSavedContact = function(contact) {
-  $container.html(Mustache.render(templates.vcardSaved, contact))
-}
-
-var showError = function(message) {
-  $container.html(Mustache.render(templates.error, {
-    message: message
-  }))
-  $container.find('[data-reload]').on('click', function() {
-    window.location.reload()
+    popup.api.getUser().then(function(user) {
+      popup.api.getRequestAccount().then(function(slug) {
+        // helper params used in view
+        user.hasMultipleAccounts = !!user.accounts.length
+        user.accounts.forEach(function(account) {
+          if (account.url == slug) {
+            account.isDefault = true
+          } else {
+            account.isDefault = false
+          }
+        })
+        popup.goto.vcard(user)
+      })
+    }).fail(function() {
+      popup.goto.login()
+    }).always(function() {
+      popup.preloader.hide()
+    })
   })
 }
 
-var deepMerge = function(compareAttr, first, second) {
+popup.preloader = {
+  show: function() {
+    popup.$container.addClass('container--loading')
+  },
+  hide: function() {
+    popup.$container.removeClass('container--loading')
+  }
+}
+
+popup.changeSaveLabel = function(label) {
+  var btn = $('.vcardsave__btn')
+
+  if (label == 'save') {
+    btn.text('Zapisz kontakt')
+  } else {
+    btn.text('Dodaj kontakt')
+  }
+}
+
+popup.showAllFields = function() {
+  $('.vcardform__group.hidden').removeClass('hidden')
+  $('#showallfields').closest('.vcardform__group').remove()
+}
+
+// merge only non existing properties from second to first object
+// comparing by compareProp
+popup.customObjectMerge = function(compareProp, first, second) {
   second.forEach(function(element, index) {
     var searchResults = $.grep(first, function(searchElement) {
-      return element[compareAttr] == searchElement[compareAttr]
+      return element[compareProp] == searchElement[compareProp]
     })
 
     if (searchResults.length == 0) {
@@ -94,155 +81,185 @@ var deepMerge = function(compareAttr, first, second) {
   return first
 }
 
-var fetchSimilar = function(response) {
-  if (!response)
-    return
-
+popup.fetchSimilarContacts = function(contact) {
   // reset when fetching after account change
-  changeSaveLabel('add')
+  popup.changeSaveLabel('add')
   $('#vcardsimilar').html('')
 
-  api.getContacts({
-    name: response.name,
-    first_name: response.firstName
-  }).done(function(data) {
-    if (data.length) {
-      var contacts = data
-      var html = Mustache.render(templates.vcard.similar, {
-        contacts: contacts,
-        hasContacts: !!contacts.length
-      })
-      $('#vcardsimilar').html(html)
-      $('#vcardsimilar [data-contact-id]').on('click', function() {
-        var $this = $(this)
-        var activeClass = 'similaritem--active'
+  popup.api.getContacts({
+    name: contact.name,
+    first_name: contact.firstName
+  }).done(function(similarContacts) {
+    if (!similarContacts.length) {
+      return
+    }
 
-        if ($this.hasClass(activeClass)) {
-          // when toggling active leave fields but save as new contact
-          $this.removeClass(activeClass)
-          $('[name=id]').val('')
-          changeSaveLabel('add')
-        } else {
-          var contactId = $this.data('contact-id')
-          var contact = $.grep(contacts, function(element) {
-            return element.id == contactId
-          })[0]
+    var html = Mustache.render(popup.templates.vcard.similar, {
+      contacts: similarContacts,
+      hasContacts: !!similarContacts.length // helper property used in template
+    })
+    $('#vcardsimilar').html(html)
 
-          var merged = response
-          for (key in contact) {
-            if ($.isArray(contact[key])) {
-              var compareProp = false
-              switch (key) {
-                case 'websites':
-                  compareProp = 'url'
-                  break;
-                case 'emails':
-                  compareProp = 'address'
-                  break;
-                case 'phones':
-                  compareProp = 'number'
-                  break;
-              }
-              if (compareProp)
-                merged[key] = deepMerge(compareProp, merged[key] || [], contact[key])
-            } else if (contact[key]) {
-              merged[key] = contact[key]
+    $('#vcardsimilar [data-contact-id]').on('click', function() {
+      var $this = $(this)
+      var activeClass = 'similaritem--active'
+
+      if ($this.hasClass(activeClass)) {
+        $this.removeClass(activeClass)
+        $('[name=id]').val('') // without id api saves as new contact
+        popup.changeSaveLabel('add')
+      } else {
+        // merge contacts
+        var similarContactId = $this.data('contact-id')
+        // get similar contact from pulled data
+        var similarContact = $.grep(similarContacts, function(element) {
+          return element.id == similarContactId
+        })[0]
+
+        // merge is performed on original contact
+        for (var prop in similarContact) {
+          if ($.isArray(similarContact[prop])) {
+            var compareProp = false
+            switch (prop) {
+              case 'websites':
+                compareProp = 'url'
+                break;
+              case 'emails':
+                compareProp = 'address'
+                break;
+              case 'phones':
+                compareProp = 'number'
+                break;
             }
+            if (compareProp) {
+              contact[prop] = popup.customObjectMerge(compareProp, contact[prop] || [], similarContact[prop])
+            }
+          } else if (prop == 'avatar' && contact[prop]) {
+            // always leave updated avatar
+          } else if (similarContact[prop]) {
+            contact[prop] = similarContact[prop]
           }
-
-          fillVcardForms(merged)
-
-          $this.addClass(activeClass)
-          $this.siblings('.'+activeClass).removeClass(activeClass)
-          changeSaveLabel('save')
         }
 
-        showAllFields()
-      })
-    }
-  })
-}
+        popup.fillVcardForms(contact)
 
-var showAllFields = function() {
-  $('.vcardform__group.hidden').removeClass('hidden')
-  $('#showallfields').closest('.vcardform__group').remove()
-}
-
-var showVcard = function(tab, user) {
-  chrome.tabs.sendMessage(tab.id, {action: 'getData'}, function(response) {
-    $container.html(Mustache.render(templates.vcard.primary, {
-      user: user
-    }))
-
-    fillVcardForms(response)
-    fetchSimilar(response)
-
-    // on unsupported sites show empty form
-    if (!response) {
-      showAllFields()
-    }
-
-    var $contactform = $('#contactform')
-    $contactform.on('submit', function(e) {
-      e.preventDefault()
-
-      var contactData = $contactform.find(':input').filter(function () {
-        // exclude empty fields
-        return $.trim(this.value).length > 0
-      }).serializeJSON()
-
-      api.saveContact(contactData)
-        .then(showSavedContact)
-        .fail(function() {
-          showError()
-        })
-    })
-
-    var $accountselect = $('#accountselect')
-    $accountselect.on('change', function() {
-      var slug = $(this).val()
-
-      api.changeRequestAccount(slug)
-      fetchSimilar(response)
-    })
-
-    $(document).on('change', '#showallfields', function() {
-      var $checkbox = $(this)
-      var $wrapper = $checkbox.closest('.vcardform__group')
-
-      if ($checkbox.is(':checked')) {
-        showAllFields()
+        $this.addClass(activeClass)
+        $this.siblings('.' + activeClass).removeClass(activeClass)
+        popup.changeSaveLabel('save')
       }
-    })
 
-    $(document).on('click', '[data-addinput]', function() {
-      var $this = $(this)
-      var name = $this.data('addinput')
-      var $input = $('[name="'+name+'"]').first().clone().val('')
-      $this.before($input)
+      popup.showAllFields()
     })
   })
 }
 
-var showLogin = function(tab, error) {
-  $container.html(Mustache.render(templates.login, {
+// views namespace
+popup.goto = {}
+
+popup.goto.login = function(error) {
+  popup.$container.html(Mustache.render(popup.templates.login, {
     error: error
   }))
 
-  var $form = $container.find('form')
+  var $form = popup.$container.find('form')
   $form.on('submit', function(e) {
     e.preventDefault()
-    togglePreloader('show')
+    popup.preloader.show()
 
-    api.signin($form.serializeJSON())
+    popup.api.signin($form.serializeJSON())
       .done(function(user) {
-        showVcard(tab, user)
+        popup.goto.vcard(user)
       })
       .fail(function(data) {
-        showLogin(tab, data)
+        popup.goto.login(data)
       })
       .always(function() {
-        togglePreloader('hide')
+        popup.preloader.hide()
       })
   })
 }
+
+popup.fillVcardForms = function(data) {
+  $('#vcardform').html(Mustache.render(popup.templates.vcard.form, {
+    data: data
+  }))
+  $('#vcardheader').html(Mustache.render(popup.templates.vcard.header, {
+    data: data
+  }))
+
+  $('#showallfields').on('change', function() {
+    var $checkbox = $(this)
+    var $wrapper = $checkbox.closest('.vcardform__group')
+
+    if ($checkbox.is(':checked')) {
+      popup.showAllFields()
+    }
+  })
+
+  $('[data-addinput]').on('click', function() {
+    var $this = $(this)
+    var name = $this.data('addinput')
+    var $input = $('[name="' + name + '"]').first().clone().val('')
+    $this.before($input)
+  })
+}
+
+popup.goto.vcard = function(user) {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    // pull data from active page aggregator
+    chrome.tabs.sendMessage(tabs[0].id, {action: 'getData'}, function(response) {
+      // render vcard wireframe
+      popup.$container.html(Mustache.render(popup.templates.vcard.primary, {
+        user: user
+      }))
+
+      popup.fillVcardForms(response)
+      if (response) {
+        popup.fetchSimilarContacts(response)
+      } else {
+        // on unsupported sites show empty form
+        popup.showAllFields()
+      }
+
+      var $contactform = $('#contactform')
+      $contactform.on('submit', function(e) {
+        e.preventDefault()
+
+        var contactData = $contactform.find(':input, textarea').filter(function() {
+          // exclude empty fields
+          return $.trim(this.value).length > 0
+        }).serializeJSON()
+
+        popup.api.saveContact(contactData)
+          .then(popup.goto.saved)
+          .fail(function() {
+            popup.goto.error()
+          })
+      })
+
+      var $accountselect = $('#accountselect')
+      $accountselect.on('change', function() {
+        var slug = $(this).val()
+
+        popup.api.changeRequestAccount(slug)
+        popup.fetchSimilarContacts(response)
+      })
+    })
+  })
+}
+
+popup.goto.saved = function(contact) {
+  popup.$container.html(Mustache.render(popup.templates.vcardSaved, contact))
+}
+
+popup.goto.error = function(message) {
+  popup.$container.html(Mustache.render(popup.templates.error, {
+    message: message
+  }))
+  popup.$container.find('[data-reload]').on('click', function() {
+    window.location.reload()
+  })
+}
+
+// init the magic
+popup.init()
