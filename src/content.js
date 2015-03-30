@@ -23,4 +23,4 @@ chrome.runtime.onMessage.addListener(
       sendResponse(aggregator.data || false);
     }
   }
-);
+)
