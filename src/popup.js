@@ -230,10 +230,14 @@ popup.goto.vcard = function(user) {
           return $.trim(this.value).length > 0
         }).serializeJSON()
 
+        popup.preloader.show()
         popup.api.saveContact(contactData)
           .then(popup.goto.saved)
           .fail(function() {
             popup.goto.error()
+          })
+          .always(function() {
+            popup.preloader.hide()
           })
       })
 
