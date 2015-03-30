@@ -33,8 +33,8 @@ popup.init = function() {
         })
         popup.goto.vcard(user)
       })
-    }).fail(function() {
-      popup.goto.login()
+    }).fail(function(message) {
+      popup.goto.login(message)
     }).always(function() {
       popup.preloader.hide()
     })

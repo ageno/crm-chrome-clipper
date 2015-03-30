@@ -54,16 +54,34 @@ MinicrmApi.prototype.changeRequestAccount = function(accountName) {
 }
 
 MinicrmApi.prototype.getUser = function() {
-  return $.ajax({
+  var deferred = new $.Deferred()
+  var _this = this
+
+  $.ajax({
     url: this.getRequestPath() + '/api/account/user',
     type: 'get',
-    dataType: 'json'
+    dataType: 'json',
+    success: function(user) {
+      if (user.accounts && user.accounts.length) {
+        deferred.resolve(user)
+      } else {
+        _this.signout().then(function() {
+          deferred.reject({error: 'Użytkownik nie posiada przypisanego żadnego konta'})
+        })
+      }
+    },
+    error: function(jqXHR) {
+      deferred.reject(jqXHR.responseJSON)
+    },
   })
+
+  return deferred.promise()
 }
 
 MinicrmApi.prototype.signin = function(userData) {
   var deferred = new $.Deferred()
   var _this = this
+
   $.ajax({
     url: this.getRequestPath() + '/api/account/signin',
     type: 'post',
@@ -76,7 +94,9 @@ MinicrmApi.prototype.signin = function(userData) {
           deferred.resolve(data)
         })
       } else {
-        deferred.reject({error: 'Użytkownik nie posiada przypisanego żadnego konta'})
+        _this.signout().always(function() {
+          deferred.reject({error: 'Użytkownik nie posiada przypisanego żadnego konta'})
+        })
       }
     },
     error: function(jqXHR) {
