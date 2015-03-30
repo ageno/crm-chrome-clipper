@@ -19,42 +19,13 @@ popup.templates = {
 popup.init = function() {
   chrome.runtime.getBackgroundPage(function(backgroundWindow) {
     popup.api = new backgroundWindow.MinicrmApi()
-    popup.api.getUser().then(function(user) {
-      popup.decorateUserAccounts(user).then(function() {
-        popup.goto.vcard(user)
-      })
+    popup.api.getUser().then(function(decoratorPromise) {
+      decoratorPromise.always(popup.goto.vcard)
     }).fail(function(message) {
       popup.goto.login(message)
     }).always(function() {
       popup.preloader.hide()
     })
-  })
-}
-
-popup.decorateUserAccounts = function(user) {
-  return popup.api.getRequestAccount().then(function(slug) {
-    // helper params used in view
-    user.hasMultipleAccounts = !!user.accounts.length
-
-    var foundDefaultAccount = false
-    user.accounts.forEach(function(account) {
-      if (account.url == slug) {
-        foundDefaultAccount = true
-        account.isDefault = true
-      } else {
-        account.isDefault = false
-      }
-    })
-
-    // when user lost permission to his default account
-    // change account to first one
-    if (!foundDefaultAccount) {
-      popup.api.changeRequestAccount(user.accounts[0].url).then(function() {
-        popup.goto.vcard(user)
-      })
-    } else {
-      popup.goto.vcard(user)
-    }
   })
 }
 
@@ -185,10 +156,8 @@ popup.goto.login = function(error) {
 
     popup.api.signin($form.serializeJSON())
       .done(function(user) {
-        popup.api.getUser().always(function(user) {
-          popup.decorateUserAccounts(user).then(function() {
-            popup.goto.vcard(user)
-          })
+        popup.api.getUser().always(function(decoratorPromise) {
+          decoratorPromise.then(popup.goto.vcard)
         })
       })
       .fail(function(message) {

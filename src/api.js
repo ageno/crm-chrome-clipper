@@ -53,22 +53,51 @@ MinicrmApi.prototype.changeRequestAccount = function(accountName) {
   return deferred.promise()
 }
 
-MinicrmApi.prototype.getUser = function() {
+MinicrmApi.prototype.decorateUserAccounts = function(user) {
   var deferred = new $.Deferred()
   var _this = this
+
+  this.getRequestAccount().then(function(slug) {
+    if (user.accounts && user.accounts.length) {
+      // helper params used in view
+      user.hasMultipleAccounts = !!user.accounts.length
+      var foundDefaultAccount = false
+      user.accounts.forEach(function(account) {
+        if (account.url == slug) {
+          foundDefaultAccount = true
+          account.isDefault = true
+        } else {
+          account.isDefault = false
+        }
+      })
+
+      // when user lost permission to his default account
+      // change default account to first one
+      if (!foundDefaultAccount) {
+        _this.changeRequestAccount(user.accounts[0].url).then(function() {
+          deferred.resolve(user)
+        })
+      } else {
+        deferred.resolve(user)
+      }
+    } else {
+      deferred.reject({error: 'Użytkownik nie posiada przypisanego żadnego konta'})
+    }
+  })
+
+  return deferred.promise()
+}
+
+MinicrmApi.prototype.getUser = function() {
+  var deferred = new $.Deferred()
 
   $.ajax({
     url: this.getRequestPath() + '/api/account/user',
     type: 'get',
     dataType: 'json',
+    context: this,
     success: function(user) {
-      if (user.accounts && user.accounts.length) {
-        deferred.resolve(user)
-      } else {
-        _this.signout().then(function() {
-          deferred.reject({error: 'Użytkownik nie posiada przypisanego żadnego konta'})
-        })
-      }
+      deferred.resolve(this.decorateUserAccounts(user))
     },
     error: function(jqXHR) {
       deferred.reject(jqXHR.responseJSON)
@@ -80,24 +109,15 @@ MinicrmApi.prototype.getUser = function() {
 
 MinicrmApi.prototype.signin = function(userData) {
   var deferred = new $.Deferred()
-  var _this = this
 
   $.ajax({
     url: this.getRequestPath() + '/api/account/signin',
     type: 'post',
     data: userData,
     dataType: 'json',
-    success: function(data) {
-      if (data.accounts && data.accounts.length) {
-        // set first account as default
-        _this.changeRequestAccount(data.accounts[0].url).then(function() {
-          deferred.resolve(data)
-        })
-      } else {
-        _this.signout().always(function() {
-          deferred.reject({error: 'Użytkownik nie posiada przypisanego żadnego konta'})
-        })
-      }
+    context: this,
+    success: function(user) {
+      deferred.resolve(this.decorateUserAccounts(user))
     },
     error: function(jqXHR) {
       deferred.reject(jqXHR.responseJSON)
