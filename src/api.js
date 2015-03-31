@@ -1,5 +1,11 @@
 'use strict'
 
+$.ajaxSetup({
+    beforeSend: function (jqXHR) {
+        jqXHR.setRequestHeader('X_REQUESTED_WITH', 'XMLHttpRequest')
+    }
+})
+
 var MinicrmApi = function() {
   // allow only one instance of api to be created
   if (MinicrmApi.prototype._singletonInstance) {
