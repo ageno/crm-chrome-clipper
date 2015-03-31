@@ -128,7 +128,7 @@ CrmAggregator.prototype.getAvatar = function() {
   var regex = new RegExp(pattern).exec(path)
   if (regex && regex.length >= 2) {
     var username = regex[1] // get first group
-    return 'https://graph.facebook.com/' + username + '/picture?type=large'
+    return 'https://graph.facebook.com/' + username + '/picture?width=192&height=192'
   } else {
     return false
   }
