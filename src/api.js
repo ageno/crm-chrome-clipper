@@ -2,7 +2,7 @@
 
 $.ajaxSetup({
     beforeSend: function (jqXHR) {
-        jqXHR.setRequestHeader('X_REQUESTED_WITH', 'XMLHttpRequest')
+        jqXHR.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     }
 })
 
