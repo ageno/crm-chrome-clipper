@@ -1,7 +1,38 @@
 var CrmAggregator = function() {
-  this.type = this.getContactType()
-
-  if (this.type == 'company') {
+  // order matter, page can be personal
+  if (this.isPage() && this.isPerson()) {
+    this.type = 'person'
+    this.elements = [
+      {
+        name: 'name',
+        selector: '._58gi',
+        modifier: this.parseLastname
+      },
+      {
+        name: 'first_name',
+        selector: '._58gi',
+        modifier: this.parseFirstname
+      },
+      {
+        name: 'avatar',
+        selector: false,
+        value: this.getAvatar
+      },
+      {
+        name: 'phones',
+        selector: '._2n7q._42ef._c24._50f3',
+        multiple: true,
+        modifier: this.parsePhone
+      },
+      {
+        name: 'websites',
+        selector: '._2kcr._42ef[rel=nofollow]',
+        modifier: this.parseWebsite,
+        multiple: true
+      }
+    ]
+  } else if (this.isPage()) {
+    this.type = 'company'
     this.elements = [
       {
         name: 'name',
@@ -25,7 +56,8 @@ var CrmAggregator = function() {
         multiple: true
       }
     ]
-  } else if (this.type == 'person') {
+  } else if (this.isPerson()) {
+    this.type = 'person'
     this.elements = [
       {
         name: 'first_name',
@@ -66,7 +98,7 @@ CrmAggregator.prototype.constructor = CrmBaseAggregator
 CrmAggregator.prototype.getAvatar = function() {
   var path = window.location.pathname + window.location.search
   /*
-    // for simple tests  
+    // for simple tests
     var regex = new RegExp(pattern)
     tests.forEach(function(path) {
       console.log(regex.exec(path))
@@ -102,12 +134,22 @@ CrmAggregator.prototype.getAvatar = function() {
   }
 }
 
-CrmAggregator.prototype.getContactType = function() {
-  if (document.querySelector('body.pagesTimelineLayout')) {
-    return 'company'
-  } else if (document.querySelector('body.timelineLayout:not(.pagesTimelineLayout)')) {
-    return 'person'
-  } else {
-    return false
+CrmAggregator.prototype.isPerson = function() {
+  var isPerson = false
+
+  if (document.querySelector('body.timelineLayout:not(.pagesTimelineLayout)')) {
+    isPerson = true
+  } else if (this.isPage()) {
+    var titleElement = document.querySelector('._58gj.fsxxl.fwn.fcw')
+    var allowedTitles = ['artist', 'politician', 'public figure']
+    if (titleElement && allowedTitles.indexOf(titleElement.innerText.toLowerCase()) > -1) {
+      isPerson = true
+    }
   }
+
+  return isPerson
+}
+
+CrmAggregator.prototype.isPage = function() {
+  return !!document.querySelector('body.pagesTimelineLayout')
 }
