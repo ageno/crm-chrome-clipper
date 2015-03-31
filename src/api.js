@@ -8,8 +8,8 @@ var MinicrmApi = function() {
   MinicrmApi.prototype._singletonInstance = this;
 
   // config
-  this.requestDomain = 'devcrm.ageno.pl'
-  this.requestProtocol = 'http://'
+  this.requestDomain = 'minicrm.pl'
+  this.requestProtocol = 'https://'
 
   // limits get similar contact requests to 1
   this.pendingGetContactsXhr = false
