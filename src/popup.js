@@ -123,9 +123,16 @@ popup.fetchSimilarContacts = function(contact) {
     })
     $('#vcardsimilar').html(html)
 
+    var isMerged = false
+
     $('#vcardsimilar [data-contact-id]').on('click', function() {
       var $this = $(this)
       var activeClass = 'similaritem--active'
+
+      // restore not-merged contact
+      if (isMerged) {
+        popup.fillVcardForms(contact)
+      }
 
       if ($this.hasClass(activeClass)) {
         $this.removeClass(activeClass)
@@ -137,13 +144,15 @@ popup.fetchSimilarContacts = function(contact) {
         var similarContact = $.grep(similarContacts, function(element) {
           return element.id == similarContactId
         })[0]
+        var mergedContact = $.extend(true, {}, contact) // deep object clone
 
-        popup.mergeContacts(contact, similarContact)
+        popup.mergeContacts(mergedContact, similarContact)
 
-        popup.fillVcardForms(contact)
+        popup.fillVcardForms(mergedContact)
         $this.addClass(activeClass)
         $this.siblings('.' + activeClass).removeClass(activeClass)
         popup.changeSaveLabel('save')
+        isMerged = true
       }
 
       popup.showAllFields()
