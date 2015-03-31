@@ -58,9 +58,17 @@ popup.mergeContacts = function(first, second) {
   for (var prop in second) {
     if ($.isArray(second[prop])) {
       var compareProp = false
+      var comparePropModifier = false
+
       switch (prop) {
         case 'websites':
           compareProp = 'url'
+          comparePropModifier = function(value) {
+            // escape trailing slash
+            // the same happen in aggregator
+            // prevents from url duplication when one contact has trailing slash
+            return value.replace(/\/+$/, '')
+          }
           break;
         case 'emails':
           compareProp = 'address'
@@ -69,10 +77,14 @@ popup.mergeContacts = function(first, second) {
           compareProp = 'number'
           break;
       }
+
       if (compareProp) {
         second[prop].forEach(function(element, index) {
           first[prop] = first[prop] || [] // make sure grep operates on array
           var searchResults = $.grep(first[prop], function(searchElement) {
+            if (comparePropModifier) {
+              element[compareProp] = comparePropModifier(element[compareProp])
+            }
             return element[compareProp] == searchElement[compareProp]
           })
 
