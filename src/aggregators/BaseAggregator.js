@@ -23,7 +23,9 @@ CrmBaseAggregator.prototype.getData = function() {
     if (!data.websites) {
       data.websites = []
     }
-    data.websites.push(this.parseWebsite(location.href))
+
+    var currentUrl = location.href.replace(/\?.*/, '') // remove GET params from url
+    data.websites.push(this.parseWebsite(currentUrl))
   }
 
   return data || false
@@ -84,6 +86,6 @@ CrmBaseAggregator.prototype.parsePhone = function(value) {
 
 CrmBaseAggregator.prototype.parseWebsite = function(value) {
   return {
-    url: this.parseProtocol(value).replace(/\?.*|\/+$/, '') // escape get params and trailing slash
+    url: this.parseProtocol(value).replace(/\/+$/, '') // escape trailing slash
   }
 }
