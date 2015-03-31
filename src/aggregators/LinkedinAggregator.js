@@ -1,3 +1,5 @@
+'use strict'
+
 var CrmAggregator = function() {
   this.type = this.getContactType()
 

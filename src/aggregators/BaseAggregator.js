@@ -1,3 +1,5 @@
+'use strict'
+
 var CrmBaseAggregator = function(type) {
   this.data = this.getData()
 }
@@ -18,8 +20,9 @@ CrmBaseAggregator.prototype.getData = function() {
     })
     data.is_company = (this.type == 'company') ? true : false
 
-    if (!data.websites)
+    if (!data.websites) {
       data.websites = []
+    }
     data.websites.push({
       url: location.href
     })
@@ -47,8 +50,9 @@ CrmBaseAggregator.prototype.getValueFromDOM = function(domElement, attribute, mo
   var value = attribute ? attribute.textContent : domElement.innerText
   value = value.trim()
 
-  if (modifier)
+  if (modifier) {
     value = modifier.call(this, value)
+  }
 
   return value || null
 }

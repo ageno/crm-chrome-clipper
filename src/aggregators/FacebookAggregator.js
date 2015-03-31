@@ -1,3 +1,5 @@
+'use strict'
+
 var CrmAggregator = function() {
   // order matter, page can be personal
   if (this.isPage() && this.isPerson()) {
