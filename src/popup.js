@@ -52,18 +52,42 @@ popup.showAllFields = function() {
   $('#showallfields').closest('.vcardform__group').remove()
 }
 
-// merge only non existing properties from second to first object
-// comparing by compareProp
-popup.customObjectMerge = function(compareProp, first, second) {
-  second.forEach(function(element, index) {
-    var searchResults = $.grep(first, function(searchElement) {
-      return element[compareProp] == searchElement[compareProp]
-    })
+// merge only non existing properties from second to first contact
+// first contact is changed by reference
+popup.mergeContacts = function(first, second) {
+  for (var prop in second) {
+    if ($.isArray(second[prop])) {
+      var compareProp = false
+      switch (prop) {
+        case 'websites':
+          compareProp = 'url'
+          break;
+        case 'emails':
+          compareProp = 'address'
+          break;
+        case 'phones':
+          compareProp = 'number'
+          break;
+      }
+      if (compareProp) {
+        second[prop].forEach(function(element, index) {
+          first[prop] = first[prop] || [] // make sure grep operates on array
+          var searchResults = $.grep(first[prop], function(searchElement) {
+            return element[compareProp] == searchElement[compareProp]
+          })
 
-    if (searchResults.length == 0) {
-      first.push(element)
+          // push only when does not exist in first contact
+          if (searchResults.length == 0) {
+            first[prop].push(element)
+          }
+        })
+      }
+    } else if (prop == 'avatar' && first[prop]) {
+      // always leave updated avatar
+    } else if (second[prop]) {
+      first[prop] = second[prop]
     }
-  })
+  }
 
   return first
 }
@@ -96,40 +120,15 @@ popup.fetchSimilarContacts = function(contact) {
         $('[name=id]').val('') // without id api saves as new contact
         popup.changeSaveLabel('add')
       } else {
-        // merge contacts
         var similarContactId = $this.data('contact-id')
         // get similar contact from pulled data
         var similarContact = $.grep(similarContacts, function(element) {
           return element.id == similarContactId
         })[0]
 
-        // merge is performed on original contact
-        for (var prop in similarContact) {
-          if ($.isArray(similarContact[prop])) {
-            var compareProp = false
-            switch (prop) {
-              case 'websites':
-                compareProp = 'url'
-                break;
-              case 'emails':
-                compareProp = 'address'
-                break;
-              case 'phones':
-                compareProp = 'number'
-                break;
-            }
-            if (compareProp) {
-              contact[prop] = popup.customObjectMerge(compareProp, contact[prop] || [], similarContact[prop])
-            }
-          } else if (prop == 'avatar' && contact[prop]) {
-            // always leave updated avatar
-          } else if (similarContact[prop]) {
-            contact[prop] = similarContact[prop]
-          }
-        }
+        popup.mergeContacts(contact, similarContact)
 
         popup.fillVcardForms(contact)
-
         $this.addClass(activeClass)
         $this.siblings('.' + activeClass).removeClass(activeClass)
         popup.changeSaveLabel('save')
