@@ -23,9 +23,7 @@ CrmBaseAggregator.prototype.getData = function() {
     if (!data.websites) {
       data.websites = []
     }
-    data.websites.push({
-      url: location.href
-    })
+    data.websites.push(this.parseWebsite(location.href))
   }
 
   return data || false
@@ -86,6 +84,6 @@ CrmBaseAggregator.prototype.parsePhone = function(value) {
 
 CrmBaseAggregator.prototype.parseWebsite = function(value) {
   return {
-    url: this.parseProtocol(value)
+    url: this.parseProtocol(value).replace(/\?.*|\/+$/, '') // escape get params and trailing slash
   }
 }
