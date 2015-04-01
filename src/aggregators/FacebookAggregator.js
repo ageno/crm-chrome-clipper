@@ -98,6 +98,11 @@ CrmAggregator.prototype = new CrmBaseAggregator()
 CrmAggregator.prototype.constructor = CrmBaseAggregator
 
 CrmAggregator.prototype.getAvatar = function() {
+  var isDefault = !!document.querySelector('.profilePic.silhouette')
+  if (isDefault) {
+    return false
+  }
+
   var path = window.location.pathname + window.location.search
   /*
     // for simple tests

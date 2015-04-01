@@ -4,7 +4,9 @@ body {
   color: #333;
 }
 
-* {
+*,
+*:before,
+*:after {
   box-sizing: border-box;
 }
 
