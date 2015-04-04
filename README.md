@@ -7,8 +7,17 @@
 - background page (api) - chrome://extensions -> inspect background page
 - content scripts (agregatory) - inspektor aktualnie otwartej strony
 
-### Selektory dla danej strony
-- zdefiniowane są w tablicy "elements" w konstruktorze danego agregatora
+### Definicja pola w agregatorze (tablica "this.elements")
+
+```
+{
+  name: string
+  selector: string
+  modifier: function //modyfikator wartości po wyciągnięciu, a przed zapisaniem do obiektu
+  multiple: bool //czy szukać wielu elementów (domyślnie tylko raz)
+  value: string/function //pomija wyciąganie wartości z selektora (pozwala użyć customowej funkcji zwracającej string, np link do avatara z facebook graph)
+}
+```
 
 ### Dodawanie agregatora dla nowej strony
 - stworzyć plik z klasą CrmAggregator dziedziczący po CrmBaseAggregator
