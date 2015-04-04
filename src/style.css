@@ -2,6 +2,7 @@ body {
   margin: 0;
   font: 13px/18px Helvetica, Arial, sans-serif;
   color: #333;
+  min-height: 300px;
 }
 
 *,
@@ -51,6 +52,11 @@ a:hover {
   text-decoration: underline;
 }
 
+button {
+  cursor: pointer;
+  outline: 0;
+}
+
 .login__btn,
 .error__btn,
 .saved__btn,
@@ -58,7 +64,6 @@ a:hover {
 .similaritem__btn,
 .logout__btn {
   display: inline-block;
-  cursor: pointer;
   line-height: 20px;
   padding: 5px 10px;
   font-weight: bold;
@@ -67,7 +72,6 @@ a:hover {
   box-shadow: 0 0 2px 0 rgba(0,0,0,.3);
   border: 0;
   font-size: 13px;
-  outline: 0;
 }
 .login__btn:active,
 .error__btn:active,
@@ -122,8 +126,8 @@ a:hover {
 
 .container {
   position: relative;
-  width: 300px;
-  min-height: 300px;
+  min-width: 300px;
+  min-height: 100vh;
   overflow: hidden;
 }
 
@@ -133,7 +137,7 @@ a:hover {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   background: url(images/preloader.svg) no-repeat center center rgba(255,255,255,.7);
   content: '';
 }
@@ -261,6 +265,24 @@ a:hover {
   border-color: #3A78C1;
 }
 
+.vcard__openwindow {
+  margin-right: 5px;
+  margin-left: -5px;
+  background: none;
+  width: 32px;
+  height: 32px;
+  border: 0;
+}
+
+.vcard__openwindow svg {
+  height: 100%;
+  width: 18px;
+}
+
+.vcard__openwindow path { fill: #aaa; }
+.vcard__openwindow:hover path { fill: #4A90E2; }
+.vcard__openwindow:active path { fill: #3A78C1; }
+
 .vcardsave {
   position: fixed;
   bottom: 0;
@@ -270,11 +292,15 @@ a:hover {
   display: flex;
   align-items: center;
   background: #F1F1F1;
-  padding: 10px 20px;
+  padding: 10px 15px;
 }
 
 .vcardsave__setaccount {
   flex-grow: 1;
+}
+
+.vcardsave__setaccount select {
+  max-width: 100px;
 }
 
 .vcardsave__setaccount label {
@@ -387,7 +413,7 @@ a:hover {
   display: flex;
   text-align: center;
   align-items: center;
-  height: 300px;
+  height: 100vh;
 }
 .error__inner,
 .saved__inner {

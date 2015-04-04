@@ -1,0 +1,17 @@
+<form class="login" novalidate>
+  {{#error}}
+  <div class="alert alert--error">
+    <div class="alert__inner">{{error}}</div>
+  </div>
+  {{/error}}
+  <div class="login__group">
+    <label for="input-email">E-mail</label>
+    <input type="email" name="email" id="input-email">
+  </div>
+  <div class="login__group">
+    <label for="input-password">Hasło</label>
+    <input type="password" name="password">
+  </div>
+  <button class="login__btn" type="submit">Zaloguj się</button>
+  <div class="login__footer">Nie masz konta? <a href="https://minicrm.pl/" target="_blank">Zarejestruj się teraz!</a></div>
+</form>

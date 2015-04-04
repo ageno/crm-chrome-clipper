@@ -1,0 +1,11 @@
+<div class="saved">
+  <div class="saved__inner">
+    <div class="saved__avatar {{^contact.avatar}}saved__avatar--empty{{/contact.avatar}}">
+      {{#contact.avatar}}
+      <img src="{{contact.avatar}}" alt="{{contact.name}}">
+      {{/contact.avatar}}
+    </div>
+    <div class="saved__name">{{contact.first_name}} {{contact.name}}</div>
+    <a class="saved__btn" href="{{contact.url}}" target="_blank" {{#isWindow}}data-closewindow{{/isWindow}}>Zobacz w miniCRM</a>
+  </div>
+</div>

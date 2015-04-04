@@ -66,7 +66,7 @@ MinicrmApi.prototype.decorateUserAccounts = function(user) {
   _this.getRequestAccount().always(function(slug) {
     if (user.accounts && user.accounts.length) {
       // helper params used in view
-      user.hasMultipleAccounts = !!user.accounts.length
+      user.hasMultipleAccounts = (user.accounts.length > 1)
       var foundDefaultAccount = false
       user.accounts.forEach(function(account) {
         if (account.url == slug) {

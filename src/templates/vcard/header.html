@@ -1,0 +1,22 @@
+<div class="vcardheader">
+  <div class="vcardheader__avatar {{^data.avatar}}vcardheader__avatar--empty{{/data.avatar}}">
+    {{#data.avatar}}
+    <img src="{{data.avatar}}" data-avatar>
+    {{/data.avatar}}
+    <input type="hidden" value="{{data.avatar}}" name="avatar">
+  </div>
+  <div class="vcardheader__name">
+    <label>
+    {{^data.is_company}}Imię i nazwisko{{/data.is_company}}
+    {{#data.is_company}}Nazwa{{/data.is_company}}
+    </label>
+    <div class="vcardheader__inputs">
+      {{^data.is_company}}
+      <input type="text" value="{{data.first_name}}" name="first_name">
+      {{/data.is_company}}
+      <input type="text" value="{{data.name}}" name="name">
+    </div>
+    <input type="hidden" value="{{data.id}}" name="id">
+    <input type="hidden" value="{{#data.is_company}}1{{/data.is_company}}{{^data.is_company}}0{{/data.is_company}}" name="is_company">
+  </div>
+</div>

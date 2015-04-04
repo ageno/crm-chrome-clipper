@@ -1,0 +1,21 @@
+{{#hasContacts}}
+<div class="similar">
+  <h4 class="similar__header">Podobne kontakty z MiniCRM.pl</h3>
+  <ul class="similar__list">
+    {{#contacts}}
+    <li class="similaritem" data-contact-id="{{id}}">
+      <span class="similaritem__avatar {{^avatar}}similaritem__avatar--empty{{/avatar}}">
+        {{#avatar}}
+        <img src="{{avatar}}" alt="{{name}}">
+        {{/avatar}}
+      </span>
+      <span class="similaritem__details">
+        {{first_name}} {{name}}
+      </span>
+      <button class="similaritem__btn similaritem__btn--merge" type="button">Połącz i edytuj</button>
+      <button class="similaritem__btn similaritem__btn--unmerge" type="button">Odłącz</button>
+    </li>
+    {{/contacts}}
+  </ul>
+</div>
+{{/hasContacts}}

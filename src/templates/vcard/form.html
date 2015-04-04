@@ -1,0 +1,42 @@
+<div class="vcardform">
+  <div class="vcardform__group {{^data.websites}}hidden{{/data.websites}}">
+    <label>Strona</label>
+    {{^data.websites}}
+      <input type="url" name="websites[][url]">
+    {{/data.websites}}
+    {{#data.websites}}
+      <input type="url" name="websites[][url]" value="{{url}}">
+      <input type="hidden" name="websites[][id]" value="{{id}}">
+    {{/data.websites}}
+    <a data-addinput="websites[][url]">+ Dodaj stronę</a>
+  </div>
+  <div class="vcardform__group {{^data.phones}}hidden{{/data.phones}}">
+    <label>Telefon</label>
+    {{^data.phones}}
+      <input type="phone" name="phones[][number]">
+    {{/data.phones}}
+    {{#data.phones}}
+      <input type="phone" name="phones[][number]" value="{{number}}">
+      <input type="hidden" name="phones[][id]" value="{{id}}">
+    {{/data.phones}}
+    <a data-addinput="phones[][number]">+ Dodaj telefon</a>
+  </div>
+  <div class="vcardform__group {{^data.emails}}hidden{{/data.emails}}">
+    <label>E-mail</label>
+    {{^data.emails}}
+      <input type="email" name="emails[][address]">
+    {{/data.emails}}
+    {{#data.emails}}
+      <input type="email" name="emails[][address]" value="{{address}}">
+      <input type="hidden" name="emails[][id]" value="{{id}}">
+    {{/data.emails}}
+    <a data-addinput="emails[][address]">+ Dodaj e-mail</a>
+  </div>
+  <div class="vcardform__group {{^data.description}}hidden{{/data.description}}">
+    <label>Opis</label>
+    <textarea name="description"></textarea>
+  </div>
+  <div class="vcardform__group vcardform__group--showall">
+    <label><input type="checkbox" id="showallfields"> Pokaż wszystkie pola</label>
+  </div>
+</div>

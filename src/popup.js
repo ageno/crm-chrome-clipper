@@ -25,7 +25,21 @@ popup.init = function() {
       .always(function() {
         popup.preloader.hide()
       })
+
+    popup.background = backgroundWindow.background
+
+    if (!popup.isWindow()) {
+      popup.background.lastContact = false
+    }
   })
+}
+
+popup.isWindow = function() {
+  return (typeof popupWindow != 'undefined')
+}
+
+popup.getTemplate = function(name) {
+  return $.get('templates/' + name + '.html')
 }
 
 popup.preloader = {
@@ -117,158 +131,202 @@ popup.fetchSimilarContacts = function(contact) {
       return
     }
 
-    var html = Mustache.render(popup.templates.vcard.similar, {
-      contacts: similarContacts,
-      hasContacts: !!similarContacts.length // helper property used in template
-    })
-    $('#vcardsimilar').html(html)
+    popup.getTemplate('vcard/similar').then(function(template) {
+      var html = Mustache.render(template, {
+        contacts: similarContacts,
+        hasContacts: !!similarContacts.length // helper property used in template
+      })
+      $('#vcardsimilar').html(html)
 
-    var isMerged = false
+      var isMerged = false
 
-    $('#vcardsimilar [data-contact-id]').on('click', function() {
-      var $this = $(this)
-      var activeClass = 'similaritem--active'
+      $('#vcardsimilar [data-contact-id]').on('click', function() {
+        var $this = $(this)
+        var activeClass = 'similaritem--active'
 
-      // restore not-merged contact
-      if (isMerged) {
-        popup.fillVcardForms(contact)
-      }
+        // restore not-merged contact
+        if (isMerged) {
+          popup.fillVcardForms(contact, true)
+        }
 
-      if ($this.hasClass(activeClass)) {
-        $this.removeClass(activeClass)
-        $('[name=id]').val('') // without id api saves as new contact
-        popup.changeSaveLabel('add')
-      } else {
-        var similarContactId = $this.data('contact-id')
-        // get similar contact from pulled data
-        var similarContact = $.grep(similarContacts, function(element) {
-          return element.id == similarContactId
-        })[0]
-        var mergedContact = $.extend(true, {}, contact) // deep object clone
+        if ($this.hasClass(activeClass)) {
+          $this.removeClass(activeClass)
+          $('[name=id]').val('') // without id api saves as new contact
+          popup.changeSaveLabel('add')
+        } else {
+          var similarContactId = $this.data('contact-id')
+          // get similar contact from pulled data
+          var similarContact = $.grep(similarContacts, function(element) {
+            return element.id == similarContactId
+          })[0]
+          var mergedContact = $.extend(true, {}, contact) // deep object clone
 
-        popup.mergeContacts(mergedContact, similarContact)
+          popup.mergeContacts(mergedContact, similarContact)
 
-        popup.fillVcardForms(mergedContact)
-        $this.addClass(activeClass)
-        $this.siblings('.' + activeClass).removeClass(activeClass)
-        popup.changeSaveLabel('save')
-        isMerged = true
-      }
-
-      popup.showAllFields()
+          popup.fillVcardForms(mergedContact, true)
+          $this.addClass(activeClass)
+          $this.siblings('.' + activeClass).removeClass(activeClass)
+          popup.changeSaveLabel('save')
+          isMerged = true
+        }
+      })
     })
   })
+}
+
+popup.openWindow = function() {
+  chrome.windows.create({url: 'popup-window.html', type: 'popup', width: 330, height: 400})
 }
 
 // views namespace
 popup.goto = {}
 
 popup.goto.login = function(errorText) {
-  popup.$container.html(Mustache.render(popup.templates.login, {
-    error: errorText
-  }))
+  popup.getTemplate('login').then(function(template) {
+    popup.$container.html(Mustache.render(template, {
+      error: errorText
+    }))
 
-  var $form = popup.$container.find('form')
-  $form.on('submit', function(e) {
-    e.preventDefault()
-    popup.preloader.show()
+    var $form = popup.$container.find('form')
+    $form.on('submit', function(e) {
+      e.preventDefault()
+      popup.preloader.show()
 
-    popup.api.signin($form.serializeJSON())
-      .done(function(user) {
-        popup.api.getUser().always(popup.goto.vcard)
-      })
-      .fail(function(message) {
-        popup.goto.login(message)
-      })
-      .always(function() {
-        popup.preloader.hide()
-      })
+      popup.api.signin($form.serializeJSON())
+        .done(function(user) {
+          popup.api.getUser().always(popup.goto.vcard)
+        })
+        .fail(function(message) {
+          popup.goto.login(message)
+        })
+        .always(function() {
+          popup.preloader.hide()
+        })
+    })
   })
 }
 
-popup.fillVcardForms = function(data) {
-  $('#vcardform').html(Mustache.render(popup.templates.vcard.form, {
-    data: data
-  }))
-  $('#vcardheader').html(Mustache.render(popup.templates.vcard.header, {
-    data: data
-  }))
+popup.fillVcardForms = function(data, showAllFields) {
+  popup.getTemplate('vcard/header').then(function(template) {
+    $('#vcardheader').html(Mustache.render(template, {
+      data: data
+    }))
+  })
 
-  $('#showallfields').on('change', function() {
-    var $checkbox = $(this)
-    var $wrapper = $checkbox.closest('.vcardform__group')
+  popup.getTemplate('vcard/form').then(function(template) {
+    $('#vcardform').html(Mustache.render(template, {
+      data: data
+    }))
 
-    if ($checkbox.is(':checked')) {
+    if (!data) {
+      popup.showAllFields()
+    }
+
+    $('#showallfields').on('change', function() {
+      var $checkbox = $(this)
+      var $wrapper = $checkbox.closest('.vcardform__group')
+
+      if ($checkbox.is(':checked')) {
+        popup.showAllFields()
+      }
+    })
+
+    $('[data-addinput]').on('click', function() {
+      var $this = $(this)
+      var name = $this.data('addinput')
+      var $input = $('[name="' + name + '"]').first().clone().val('')
+      $this.before($input)
+    })
+
+    if (showAllFields) {
       popup.showAllFields()
     }
   })
+}
 
-  $('[data-addinput]').on('click', function() {
-    var $this = $(this)
-    var name = $this.data('addinput')
-    var $input = $('[name="' + name + '"]').first().clone().val('')
-    $this.before($input)
+popup.renderVcard = function(contact, user) {
+  popup.getTemplate('vcard/vcard').then(function(template) {
+    popup.$container.html(Mustache.render(template, {
+      user: user,
+      isWindow: popup.isWindow()
+    }))
+
+    popup.fillVcardForms(contact)
+    if (contact) {
+      popup.fetchSimilarContacts(contact)
+      popup.background.lastContact = contact
+    }
+
+    var $contactform = $('#contactform')
+    $contactform.on('submit', function(e) {
+      e.preventDefault()
+
+      var contactData = $contactform.find(':input, textarea').filter(function() {
+        // exclude empty fields
+        return $.trim(this.value).length > 0
+      }).serializeJSON()
+
+      popup.preloader.show()
+      popup.api.saveContact(contactData)
+        .done(popup.goto.saved)
+        .fail(function() {
+          popup.goto.error()
+        })
+        .always(function() {
+          popup.preloader.hide()
+        })
+    })
+
+    var $accountselect = $('#accountselect')
+    $accountselect.on('change', function() {
+      var slug = $(this).val()
+
+      popup.api.changeRequestAccount(slug)
+      popup.fetchSimilarContacts(contact)
+    })
+
+    $('#openwindow').on('click', function() {
+      popup.openWindow()
+    })
   })
 }
 
 popup.goto.vcard = function(user) {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    // pull data from active page aggregator
-    chrome.tabs.sendMessage(tabs[0].id, {action: 'getData'}, function(response) {
-      // render vcard wireframe
-      popup.$container.html(Mustache.render(popup.templates.vcard.primary, {
-        user: user
-      }))
-
-      popup.fillVcardForms(response)
-      if (response) {
-        popup.fetchSimilarContacts(response)
-      } else {
-        // on unsupported sites show empty form
-        popup.showAllFields()
-      }
-
-      var $contactform = $('#contactform')
-      $contactform.on('submit', function(e) {
-        e.preventDefault()
-
-        var contactData = $contactform.find(':input, textarea').filter(function() {
-          // exclude empty fields
-          return $.trim(this.value).length > 0
-        }).serializeJSON()
-
-        popup.preloader.show()
-        popup.api.saveContact(contactData)
-          .done(popup.goto.saved)
-          .fail(function() {
-            popup.goto.error()
-          })
-          .always(function() {
-            popup.preloader.hide()
-          })
+    if (!popup.isWindow()) {
+      // pull data from active page aggregator
+      chrome.tabs.sendMessage(tabs[0].id, {action: 'getData'}, function(contact) {
+        popup.renderVcard(contact, user)
       })
+    } else {
+      popup.renderVcard(popup.background.lastContact, user)
+    }
+  })
+}
 
-      var $accountselect = $('#accountselect')
-      $accountselect.on('change', function() {
-        var slug = $(this).val()
+popup.goto.saved = function(contact) {
+  popup.getTemplate('saved').then(function(template) {
+    popup.$container.html(Mustache.render(template, {
+      contact: contact,
+      isWindow: popup.isWindow()
+    }))
 
-        popup.api.changeRequestAccount(slug)
-        popup.fetchSimilarContacts(response)
+    $('[data-closewindow]').on('click', function() {
+      chrome.tabs.getCurrent(function(tab) {
+        chrome.tabs.remove(tab.id)
       })
     })
   })
 }
 
-popup.goto.saved = function(contact) {
-  popup.$container.html(Mustache.render(popup.templates.vcardSaved, contact))
-}
-
 popup.goto.error = function(message) {
-  popup.$container.html(Mustache.render(popup.templates.error, {
-    message: message
-  }))
-  popup.$container.find('[data-reload]').on('click', function() {
-    window.location.reload()
+  popup.getTemplate('vcard/error').then(function(template) {
+    popup.$container.html(Mustache.render(template, {
+      message: message
+    }))
+    popup.$container.find('[data-reload]').on('click', function() {
+      window.location.reload()
+    })
   })
 }
 
