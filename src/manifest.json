@@ -1,6 +1,8 @@
 {
   "name": "Importer kontaktów do miniCRM z Social Media",
-  "description": "",
+  "short_name": "miniCRM",
+  "description": "Aplikacja miniCRM to prosty CRM online dla małych firm. Ten plugin miniCRM do Google Chrome pozwala szybko importować kontakty z social media, wprost do aplikacji. Obsługiwane portale to GolednLine, Facebook, LinkedIn.",
+  "homepage_url": "https://minicrm.pl/",
   "version": "1.0",
   "permissions": [
     "webNavigation",
