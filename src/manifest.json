@@ -3,7 +3,7 @@
   "short_name": "miniCRM",
   "description": "Prosty CRM online dla małych firm — miniCRM. Plugin pozwala importować kontakty z social media, wprost do aplikacji.",
   "homepage_url": "https://minicrm.pl/",
-  "version": "1.0",
+  "version": "1.22",
   "permissions": [
     "webNavigation",
     "activeTab",
