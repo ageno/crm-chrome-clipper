@@ -104,6 +104,7 @@ CrmAggregator.prototype.getAvatar = function() {
   }
 
   var path = window.location.pathname + window.location.search
+
   /*
     // for simple tests
     var regex = new RegExp(pattern)
@@ -112,33 +113,26 @@ CrmAggregator.prototype.getAvatar = function() {
     })
   */
   if (this.type == 'company') {
-    /*
-      var tests = [
-        '/sushidopl',
-        '/sushidopl?fref=ts',
-        '/sushidopl/info?tab=overview',
-        '/pages/PZ2SOMSiT/295807223800306?fref=ts',
-        '/ageno.internet/info?tab=overview',
-      ]
-    */
-    var pattern = /\/(?:pages\/[a-zA-Z0-9]*\/)?([^\/?&]+)(?:\?|\/)?/
+    var pattern = /\?profile_id=([\d]+)/
+
+    var regex = new RegExp(pattern).exec(path)
+    if (regex && regex.length >= 2) {
+      var username = regex[1] // get first group
+      return 'https://graph.facebook.com/' + username + '/picture?width=192&height=192'
+    } else {
+      return false
+    }
+
   } else if (this.type == 'person') {
-    /*
-      var tests = [
-        '/profile.php?id=100006937815053&fref=ts',
-        '/Wujku',
-      ]
-    */
-    var pattern = /\/(?:profile\.php\?id=)?([^\/?&]+)(?:\\?|\/)?/
+    var timelineReportContainer = document.querySelector('.timelineReportContainer'),
+        data = timelineReportContainer.getAttribute('data-gt'),
+        obj = JSON.parse(data);
+
+    if (obj && obj.profileownerid)
+      return 'https://graph.facebook.com/' + obj.profileownerid + '/picture?width=192&height=192'
   }
 
-  var regex = new RegExp(pattern).exec(path)
-  if (regex && regex.length >= 2) {
-    var username = regex[1] // get first group
-    return 'https://graph.facebook.com/' + username + '/picture?width=192&height=192'
-  } else {
-    return false
-  }
+  return false
 }
 
 CrmAggregator.prototype.isPerson = function() {
