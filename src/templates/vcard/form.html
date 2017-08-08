@@ -1,4 +1,7 @@
 <div class="vcardform">
+  {{#data.isFacebook}}
+    <span>Prosimy otworzyć zakładkę "Informacje".</span>
+  {{/data.isFacebook}}
   <div class="vcardform__group {{^data.websites}}hidden{{/data.websites}}">
     <label>Strona</label>
     {{^data.websites}}
